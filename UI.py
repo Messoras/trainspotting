@@ -30,8 +30,16 @@ class TrainspottingAppUI:
 
         tk.Label(self.ui_frame, text="").pack(pady=(10, 0))
 
-    def paint_field(self):
+        self.paint_field(0)
+
+
+    def paint_field(self, fps):
+        for item in self.game_entities:
+            self.canvas.delete(item)
         self.game_entities.clear()
+
+        fps_str = self.canvas.create_text(20, 20, text = f"TPS: {fps:.2f}", anchor = "w")
+        self.game_entities.append(fps_str)
         for sta in self.game.stations:
             x, y = sta.position
             dot = self.canvas.create_oval(
@@ -52,4 +60,4 @@ class TrainspottingAppUI:
 def create_ui(game):
     root = tk.Tk()
     app = TrainspottingAppUI(root, game)
-    root.mainloop()
+    return app

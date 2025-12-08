@@ -1,4 +1,5 @@
 import time
+import tkinter as tk
 import asyncio
 from random import randint
 
@@ -24,6 +25,8 @@ class Game:
         self.tick_counter = 0
         self.last_time = time.perf_counter()
 
+        self.spawn_station()
+
 
     def spawn_station(self):
         """
@@ -32,7 +35,7 @@ class Game:
         """
         x_pos = randint(0 + Constants.EDGE_MARGIN, Constants.FIELD_WIDTH - Constants.EDGE_MARGIN)
         y_pos = randint(0 + Constants.EDGE_MARGIN, Constants.FIELD_HEIGHT - Constants.EDGE_MARGIN)
-        c_type = randint(0, len(self.possible_types))
+        c_type = randint(0, self.possible_types[-1])
 
         self.stations.append(Station(x_pos, y_pos, c_type))
 
@@ -50,16 +53,21 @@ class Game:
             l.tick()
         for c in self.cargos:
             c.tick()
-        if self.tick_counter % 500 == 0:
+        if self.tick_counter % 100 == 0:
             self.spawn_station()
+        if self.tick_counter % 50 == 0:
+            print("A second has passed")
+        self.tick_counter += 1
 
 
-async def game_loop(game: Game):
+async def game_loop(game, ui):
     """
     Ticks the game logic, using the MS_PER_TICK constant. Runs faster when ticks take longer
+    :param root: TrainspottingAppUI - UI App to be updated every tick
     :param game: Game - game instance to be ticked
     :return: None
     """
+    print("Am I even called?")
     interval = Constants.MS_PER_TICK / 1000.0
     while game.running:
         start = time.perf_counter()
@@ -77,12 +85,21 @@ async def game_loop(game: Game):
         sleep_time = interval - elapsed
         await asyncio.sleep(sleep_time)
 
+        # UI
+        try:
+            ui.paint_field(1 / sleep_time)
+            ui.master.update()
+        except:
+            break  # window was destroyed
+
 
 async def main():
     g = Game()
-    UI.create_ui(g)
-    await game_loop(g)
+    ui = UI.create_ui(g)
+    await asyncio.create_task(game_loop(g, ui))
+    # await async_tkinter_loop(ui.master)
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+
