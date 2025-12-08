@@ -1,7 +1,12 @@
-from Constants import *
+import Constants
 
 class Cargo:
     def __init__(self, cargo_type, start_station):
+        """
+        Constructor
+        :param cargo_type: int - type of this cargo
+        :param start_station: Station - first owner object to define position
+        """
         self.cargo_type = cargo_type
         self.owner = start_station
         self.elimination_timer = Constants.ELIMINATION_TIMER
