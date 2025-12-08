@@ -1,5 +1,4 @@
 import time
-import tkinter as tk
 import asyncio
 from random import randint
 

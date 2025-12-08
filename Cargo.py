@@ -18,4 +18,5 @@ class Cargo:
         self.elimination_timer -= 1
         if self.elimination_timer <= 0:
             # TODO: Trigger game loss
+            #
             pass
