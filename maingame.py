@@ -20,7 +20,7 @@ class Game:
         self.lines: list['Line'] = []
         self.trains: list['Train'] = []
         for i in range(Constants.MAX_LINES):
-            self.lines.append(Line(Constants.LINE_COLOR[i]))
+            self.lines.append(Line(i, Constants.LINE_COLOR[i]))
         self.possible_types = [0, 1, 2]
         self.money: int = 100
         self.score = 0
@@ -76,6 +76,16 @@ class Game:
                 res.append(i)
 
         return res
+
+
+    def buy_train(self, line):
+        """
+        Creates a new train on the given line if there are none.
+        """
+        # For simplicity, only allow one train per line for now
+        if not line.trains:
+            train = Train(line)
+            line.trains.append(train)
 
 
     def tick(self):

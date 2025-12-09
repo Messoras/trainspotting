@@ -2,7 +2,8 @@ from Station import *
 from Train import *
 
 class Line:
-    def __init__(self, color_code: str):
+    def __init__(self, line_id: int, color_code: str):
+        self.id = line_id
         self.color = color_code
         self.stations: list['Station'] = [] 
         self.trains: list['Train'] = []
@@ -13,8 +14,8 @@ class Line:
         manages train movement each gametick
         :return: None
         """
-        # TODO: Move trains
-        pass
+        for train in self.trains:
+            train.update()
 
     def add_station(self, station: 'Station', at_beginning: bool = False):
         """

@@ -212,18 +212,32 @@ class TrainspottingAppUI:
         if not sel:
             return
         elif type(sel) == Station:
-            # Add buttons to build lines
-            for lin in self.game.get_available_lines(sel):
+  
+            for lin_id in self.game.get_available_lines(sel):
                 btn = tk.Button(
                     self.ui_frame,
-                    text=f"Line {lin}",
-                    command=lambda: self.connect_line(lin, sel),
-                    bg=Constants.LINE_COLOR[lin]
+                    text=f"Line {lin_id}",
+                    command=lambda lin_id=lin_id: self.connect_line(lin_id, sel),
+                    bg=Constants.LINE_COLOR[lin_id]
                 )
-
-                btn.pack(side="top", fill="both", expand=True)
+                btn.pack(side="top", fill="x", pady=2)
                 self.buttons.append(btn)
-        #elif type(sel) == Line.Track
+
+    
+            for line in self.game.lines:
+                if sel in line.stations and len(line.stations) >= 2:
+                    btn = tk.Button(
+                        self.ui_frame,
+                        text=f"Buy Train for Line {line.id}",
+                        command=lambda line=line: self.buy_train(line),
+                        bg=line.color
+                    )
+                    btn.pack(side="top", fill="x", pady=2)
+                    self.buttons.append(btn)
+
+    def buy_train(self, line):
+        self.game.buy_train(line)
+
 
 
     def on_close(self):

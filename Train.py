@@ -1,15 +1,76 @@
 import Constants
+import math
 
 class Train:
-    def __init__(self, line_id, x_pos, y_pos):
+    def __init__(self, line):
         """
         Constructor
-        :param line_id: int - line to put train on
+        :param line: Line object
         """
-        self.position = (x_pos, y_pos)
-        self.cargo_load = [] # maximum 6
-        self.line_id = line_id
-        self.direction = 1 # + -> forward, - -> backwards
+        self.line = line
+        self.line_id = line.id
+        self.cargo_load = []  
+        self.direction = 1  
+        self.current_station_index = 0
+        self.progress = 0.0 
+        self.speed = 0.02 
+    @property
+    def position(self):
+        """
+        Calculates the x, y position of the train on the track.
+        """
+        if not self.line.stations:
+            return 0, 0 
+
+        
+        if self.progress == 0.0:
+            return self.line.stations[self.current_station_index].position
+
+        
+        start_station_index = self.current_station_index
+        end_station_index = self.current_station_index + self.direction
+
+        
+        if self.direction == 1:
+            if end_station_index >= len(self.line.stations):
+
+                return self.line.stations[start_station_index].position
+        else: 
+             if end_station_index < 0:
+
+                return self.line.stations[start_station_index].position
+
+        start_station = self.line.stations[start_station_index]
+        end_station = self.line.stations[end_station_index]
+
+        x1, y1 = start_station.position
+        x2, y2 = end_station.position
+        
+        x = x1 + (x2 - x1) * self.progress
+        y = y1 + (y2 - y1) * self.progress
+        
+        return x, y
+
+    def update(self):
+        """
+        Updates the train's progress on the line.
+        """
+        if not self.line.stations or len(self.line.stations) < 2:
+            return 
+
+        self.progress += self.speed
+
+        if self.progress >= 1.0:
+
+            self.progress = 0.0
+            self.current_station_index += self.direction
+
+            if self.current_station_index >= len(self.line.stations) -1 and self.direction == 1:
+                self.direction = -1
+            elif self.current_station_index <= 0 and self.direction == -1:
+                self.direction = 1
+            
+            # TODO: Handle cargo loading/unloading at the station
 
     def add_cargo(self, cargo):
         """
@@ -20,7 +81,7 @@ class Train:
         if type(cargo) == list:
             for c in cargo:
                 self.add_cargo(c)
-        else: # type == Cargo:
+        else:  # type == Cargo:
             if len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
                 self.cargo_load.append(cargo)
                 cargo.owner = self
@@ -31,6 +92,6 @@ class Train:
         :param cargo_type: int - type of the cargo to be deployed
         :return: None
         """
-        for i in range(len(self.cargo_load),0,-1):
+        for i in range(len(self.cargo_load) - 1, -1, -1):
             if self.cargo_load[i].cargo_type == cargo_type:
                 del self.cargo_load[i]
