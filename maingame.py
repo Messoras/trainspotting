@@ -18,7 +18,7 @@ class Game:
         self.cargos: list['Cargo'] = []
         self.lines: list['Line'] = []
         for i in range(Constants.MAX_LINES):
-            self.lines.append(Line(Constants.LINE_COLORS[i]))
+            self.lines.append(Line(Constants.LINE_COLOR[i]))
         self.possible_types = [0, 1, 2]
         self.money: int = 100
         self.running = True
@@ -61,13 +61,17 @@ class Game:
                 return station
         return None
 
+
     def get_available_lines(self, sta):
         """
         Returns all lines that should be available to build from this station
         """
         res = []
-        for line in self.lines:
-            res.append(line.is_valid_drag_point(sta))
+
+        for i in range (len(self.lines)):
+            if self.lines[i].is_valid_drag_point(sta):
+                res.append(i)
+
         return res
 
 

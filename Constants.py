@@ -1,7 +1,7 @@
 #
 
 MAX_LINES = 3
-LINE_COLORS = ('red', 'green', 'blue')
+LINE_COLOR = ["red", "blue", "yellow", "green"]
 ELIMINATION_TIMER = 200
 CARGO_SPOTS_PER_TROLLEY = 6
 CARGO_SPAWN_TICK_DELAY = 100
