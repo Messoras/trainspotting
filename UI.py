@@ -98,8 +98,7 @@ class TrainspottingAppUI:
                         trk[0].position[0], trk[0].position[1],
                         trk[1].position[0], trk[1].position[1],
                         fill = "white",
-                        width = 2,
-                        tags = "highlight"
+                        width = 2
                     )
                     self.game_entities.append(highlight)
                 trk_iter += 1

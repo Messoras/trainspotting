@@ -102,7 +102,7 @@ class Game:
         if self.tick_counter % Constants.STATION_SPAWN_TICK_DELAY == 0:
             self.spawn_station()
         if self.tick_counter % (1000 // Constants.MS_PER_TICK) == 0:
-            print("A second has passed")
+            pass # 1 second
         self.tick_counter += 1
 
 
