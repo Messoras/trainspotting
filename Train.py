@@ -13,7 +13,7 @@ class Train:
         self.direction = 1  
         self.current_station_index = 0
         self.progress = 0.0 
-        self.speed = 0.02 
+        self.wait_timer = 0
     @property
     def position(self):
         """
@@ -55,20 +55,47 @@ class Train:
         """
         Updates the train's progress on the line.
         """
-        if not self.line.stations or len(self.line.stations) < 2:
-            return 
+        if self.wait_timer > 0:
+            self.wait_timer -= 1
+            if self.wait_timer == 0: 
+                self.progress = 0.0
+                self.current_station_index += self.direction
 
-        self.progress += self.speed
+                if self.current_station_index >= len(self.line.stations) - 1 and self.direction == 1:
+                    self.direction = -1
+                elif self.current_station_index <= 0 and self.direction == -1:
+                    self.direction = 1
+            return
+
+        if not self.line.stations or len(self.line.stations) < 2:
+            return
+
+        start_station_index = self.current_station_index
+        end_station_index = self.current_station_index + self.direction
+
+        if self.direction == 1:
+            if end_station_index >= len(self.line.stations):
+                return
+        else: 
+             if end_station_index < 0:
+                return
+
+        start_station = self.line.stations[start_station_index]
+        end_station = self.line.stations[end_station_index]
+
+        x1, y1 = start_station.position
+        x2, y2 = end_station.position
+        
+        distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+
+        if distance > 0:
+            self.progress += Constants.TRAIN_SPEED / distance
+        else:
+            self.progress = 1.0
 
         if self.progress >= 1.0:
-
-            self.progress = 0.0
-            self.current_station_index += self.direction
-
-            if self.current_station_index >= len(self.line.stations) -1 and self.direction == 1:
-                self.direction = -1
-            elif self.current_station_index <= 0 and self.direction == -1:
-                self.direction = 1
+            self.progress = 1.0
+            self.wait_timer = 24
             
             # TODO: Handle cargo loading/unloading at the station
 
