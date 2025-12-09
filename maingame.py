@@ -4,10 +4,9 @@ from random import randint
 
 import Constants
 import UI
-import Line
-import Cargo
+from Line import Line
+from Cargo import Cargo
 from Station import Station
-
 
 class Game:
     def __init__(self):
@@ -48,13 +47,17 @@ class Game:
 
 
     def tick(self):
+        """
+        Handles all logic that needs to be called continuously to update the game state
+        :return: None
+        """
         for l in self.lines:
             l.tick()
         for c in self.cargos:
             c.tick()
-        if self.tick_counter % 100 == 0:
+        if self.tick_counter % Constants.STATION_SPAWN_TICK_DELAY == 0:
             self.spawn_station()
-        if self.tick_counter % 50 == 0:
+        if self.tick_counter % (1000 // Constants.MS_PER_TICK) == 0:
             print("A second has passed")
         self.tick_counter += 1
 
@@ -62,34 +65,34 @@ class Game:
 async def game_loop(game, ui):
     """
     Ticks the game logic, using the MS_PER_TICK constant. Runs faster when ticks take longer
-    :param root: TrainspottingAppUI - UI App to be updated every tick
+    :param ui: TrainspottingAppUI - UI App to be updated every tick
     :param game: Game - game instance to be ticked
     :return: None
     """
-    print("Am I even called?")
+    old_time = 0
+
     interval = Constants.MS_PER_TICK / 1000.0
     while game.running:
         start = time.perf_counter()
 
-        # Compute time since last frame
-        now = time.perf_counter()
-        game.last_time = now
-
         # Call the game logic
         game.tick()
+
+        # UI
+        try:
+            ui.paint_field(old_time)
+            ui.master.update()
+        except Exception as ex:
+            print(ex)
+            break  # window was destroyed
 
         # Compute how long the frame took
         elapsed = time.perf_counter() - start
         # Sleep the remaining time, if any
+        # print(interval,elapsed)
         sleep_time = interval - elapsed
+        old_time = sleep_time * 1000
         await asyncio.sleep(sleep_time)
-
-        # UI
-        try:
-            ui.paint_field(1 / sleep_time)
-            ui.master.update()
-        except:
-            break  # window was destroyed
 
 
 async def main():
