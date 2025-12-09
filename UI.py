@@ -77,21 +77,6 @@ class TrainspottingAppUI:
             self.game_entities.append(dot)
             self.game_entities.append(lab)
 
-        # Draw trains
-        for trn in self.game.trains:
-            x, y = trn.position
-            #TODO: Use image instead of rectangle
-            rect = self.canvas.create_rectangle(
-                x - 12, y - 12,
-                x + 12, y + 12
-            )
-            self.game_entities.append(rect)
-            # Draw Cargo (in trains)
-            for i in range(len(trn.cargo_load)):
-                crg = trn.cargo_load[i]
-                #TODO: Use image instead of label
-                lab = self.canvas.create_text(x - 12 + 8 * i, y + (i // 8) * 12, text = crg.cargo_type)
-                self.game_entities.append(lab)
 
         # Draw tracks
         line_iter = 0
@@ -106,22 +91,59 @@ class TrainspottingAppUI:
                     tags = f"{line_iter},{trk_iter}"
                 )
                 self.game_entities.append(ln)
+                if (type(self.game.selection) == tuple and
+                        trk == self.game.selection[0].tracks[self.game.selection[1]]):
+                    # selected
+                    highlight = self.canvas.create_line(
+                        trk[0].position[0], trk[0].position[1],
+                        trk[1].position[0], trk[1].position[1],
+                        fill = "white",
+                        width = 2,
+                        tags = "highlight"
+                    )
+                    self.game_entities.append(highlight)
                 trk_iter += 1
+
+            # Draw trains (in line)
+            for trn in line.trains:
+                x, y = trn.position
+                # TODO: Use image instead of rectangle
+                rect = self.canvas.create_rectangle(
+                    x - 12, y - 12,
+                    x + 12, y + 12,
+                    fill = Constants.LINE_COLOR[line_iter]
+                )
+                self.game_entities.append(rect)
+
+                # Draw Cargo (in trains)
+                for i in range(len(trn.cargo_load)):
+                    crg = trn.cargo_load[i]
+                    # TODO: Use image instead of label
+                    lab = self.canvas.create_text(x - 12 + 8 * i, y + (i // 8) * 12, text=crg.cargo_type)
+                    self.game_entities.append(lab)
+
             line_iter += 1
 
         # Handle Selection
         if self.game.selection:
             if type(self.game.selection) == Station: # TODO: possible without importing station?
                 self.draw_station_ui(self.game.selection)
-            elif type(self.game.selection) == tuple('Station'):
+            elif type(self.game.selection) == tuple:
                 self.draw_line_ui(self.game.selection)
 
 
     def find_track_at(self, x, y):
+        """
+        looks for tracks at the given position
+        :param x: x position
+        :param y: y position
+        :return: Tuple['Line','int'] - Line that owns given track and its index
+        """
         overlap = self.canvas.find_overlapping(x - 2, y - 2, x + 2, y + 2)
         for item in overlap:
-            pass
-            # TODO: return track
+            strarr = self.canvas.gettags(item)[0].split(",")
+            return self.game.lines[int(strarr[0])], int(strarr[1])
+        return None
 
 
     def draw_station_ui(self, sta):
@@ -184,7 +206,7 @@ class TrainspottingAppUI:
             start_sta = self.building_line[1]
             sel = self.game.get_clicked_station(event.x, event.y)
             if sel:
-                # mach line zwischen building_line[1] und sel
+                # Connect selection and start station
                 if len(self.game.lines[line_id].stations) == 0:
                     self.game.lines[line_id].add_station(start_sta)
                 self.game.lines[line_id].add_station(
@@ -196,12 +218,19 @@ class TrainspottingAppUI:
                 self.game.selection = None
                 self.selection_changed()
                 return
+
         self.game.selection = self.game.get_clicked_station(event.x, event.y)
+        if not self.game.selection:
+            self.game.selection = self.find_track_at(event.x, event.y)
         self.selection_changed()
 
 
     def selection_changed(self):
-
+        """
+        Handles the change of selection object after clicking on the game panel
+        and initializes the correct UI
+        :return: None
+        """
         sel = self.game.selection
 
         # Clear previous buttons
@@ -209,21 +238,27 @@ class TrainspottingAppUI:
             item.destroy()
         self.buttons.clear()
 
+        # Clear highlighted line
+        for item in self.game_entities:
+            if "highlight" in self.canvas.gettags(item):
+                self.canvas.delete(item)
+
         if not sel:
             return
+
         elif type(sel) == Station:
-  
-            for lin_id in self.game.get_available_lines(sel):
+            # Add buttons to build lines
+            for lin in self.game.get_available_lines(sel):
                 btn = tk.Button(
                     self.ui_frame,
-                    text=f"Line {lin_id}",
-                    command=lambda lin_id=lin_id: self.connect_line(lin_id, sel),
-                    bg=Constants.LINE_COLOR[lin_id]
+                    text=f"Line {lin}",
+                    command=lambda: self.connect_line(lin, sel),
+                    bg=Constants.LINE_COLOR[lin]
                 )
                 btn.pack(side="top", fill="x", pady=2)
                 self.buttons.append(btn)
 
-    
+
             for line in self.game.lines:
                 if sel in line.stations and len(line.stations) >= 2:
                     btn = tk.Button(
@@ -237,7 +272,6 @@ class TrainspottingAppUI:
 
     def buy_train(self, line):
         self.game.buy_train(line)
-
 
 
     def on_close(self):
