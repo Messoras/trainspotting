@@ -59,6 +59,16 @@ class Game:
                 return station
         return None
 
+    def get_available_lines(self, sta):
+        """
+        Returns all lines that should be available to build from this station
+        """
+        res = []
+        for i in range(Constants.MAX_LINES):
+            # res.append(lines[i].is_valid_drag_point(self))
+            pass
+        return res
+
 
     def tick(self):
         """

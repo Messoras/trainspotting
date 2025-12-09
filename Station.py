@@ -13,17 +13,6 @@ class Station:
         self.cargo_type = cargo_type
         self.attached_lines = []
 
-    def available_lines(self):
-        """
-        Should be asked the main game, not here
-
-        Returns all lines that should be available to connect with this station
-        """
-        res = []
-        for i in range(Constants.MAX_LINES):
-            # res.append(lines[i].is_valid_drag_point(self))
-            pass
-        return res
 
     def is_clicked(self, x, y):
         """
