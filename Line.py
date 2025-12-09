@@ -11,7 +11,7 @@ class Line:
 
     def tick(self):
         """
-        manages train movement each gametick
+        manages train movement each game tick
         :return: None
         """
         for train in self.trains:

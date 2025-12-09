@@ -74,7 +74,6 @@ class Game:
         for i in range (len(self.lines)):
             if self.lines[i].is_valid_drag_point(sta):
                 res.append(i)
-
         return res
 
 

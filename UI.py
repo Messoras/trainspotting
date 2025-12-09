@@ -205,13 +205,14 @@ class TrainspottingAppUI:
             start_sta = self.building_line[1]
             sel = self.game.get_clicked_station(event.x, event.y)
             if sel:
+                print(self.building_line)
                 # Connect selection and start station
                 if len(self.game.lines[line_id].stations) == 0:
                     self.game.lines[line_id].add_station(start_sta)
                 self.game.lines[line_id].add_station(
                     sel,
                     len(self.game.lines[line_id].tracks) == 0 or
-                    start_sta in self.game.lines[line_id].tracks[0]
+                    start_sta == self.game.lines[line_id].stations[0]
                 )
                 self.building_line = None
                 self.game.selection = None
@@ -251,7 +252,7 @@ class TrainspottingAppUI:
                 btn = tk.Button(
                     self.ui_frame,
                     text=f"Line {lin}",
-                    command=lambda: self.connect_line(lin, sel),
+                    command=lambda l_id=lin: self.connect_line(l_id, sel),
                     bg=Constants.LINE_COLOR[lin]
                 )
                 btn.pack(side="top", fill="x", pady=2)
@@ -263,7 +264,7 @@ class TrainspottingAppUI:
                     btn = tk.Button(
                         self.ui_frame,
                         text=f"Buy Train for Line {line.id}",
-                        command=lambda line=line: self.buy_train(line),
+                        command=lambda: self.buy_train(line),
                         bg=line.color
                     )
                     btn.pack(side="top", fill="x", pady=2)
