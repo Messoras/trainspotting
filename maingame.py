@@ -7,6 +7,7 @@ import UI
 from Line import Line
 from Cargo import Cargo
 from Station import Station
+from Train import Train
 
 class Game:
     def __init__(self):

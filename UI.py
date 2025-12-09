@@ -17,6 +17,7 @@ class TrainspottingAppUI:
         self.game = game
         self.game_entities = []
         self.buttons = []
+        self.building_line = None
 
         # Main Frame
         self.main_frame = tk.Frame(master)
@@ -93,8 +94,15 @@ class TrainspottingAppUI:
                 self.game_entities.append(lab)
 
         # Draw tracks
-        for lin in self.game.lines:
-            pass
+        for line in self.game.lines:
+            for trk in line.tracks:
+                ln = self.canvas.create_line(
+                    trk[0].position[0], trk[0].position[1],
+                    trk[1].position[0], trk[1].position[1],
+                    fill = line.color,
+                    width = 5
+                )
+                self.game_entities.append(ln)
             #TODO: Draw lines
 
         # Handle Selection
@@ -114,14 +122,14 @@ class TrainspottingAppUI:
 
 
 
-    def connect_line(self, lin, sta):
+    def connect_line(self, lin_id, sta):
         """
         Starts the track building process
-        :param lin: int - line id for the track to connect with
+        :param lin_id: int - line id for the track to connect with
         :param sta: Station - station to connect the line to
         :return: None
         """
-        pass
+        self.building_line = (lin_id, sta)
 
 
     def draw_line_ui(self, trk):
@@ -160,6 +168,23 @@ class TrainspottingAppUI:
         :param event: mouse event
         :return: None
         """
+        if self.building_line:
+            line_id = self.building_line[0]
+            start_sta = self.building_line[1]
+            sel = self.game.get_clicked_station(event.x, event.y)
+            if sel:
+                # mach line zwischen building_line[1] und sel
+                if len(self.game.lines[line_id].stations) == 0:
+                    self.game.lines[line_id].add_station(start_sta)
+                self.game.lines[line_id].add_station(
+                    sel,
+                    len(self.game.lines[line_id].tracks) == 0 or
+                    start_sta in self.game.lines[line_id].tracks[0]
+                )
+                self.building_line = None
+                self.game.selection = None
+                self.selection_changed()
+                return
         self.game.selection = self.game.get_clicked_station(event.x, event.y)
         self.selection_changed()
 
