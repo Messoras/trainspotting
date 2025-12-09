@@ -264,7 +264,7 @@ class TrainspottingAppUI:
                     btn = tk.Button(
                         self.ui_frame,
                         text=f"Buy Train for Line {line.id}",
-                        command=lambda: self.buy_train(line),
+                        command=lambda ln = line: self.buy_train(ln),
                         bg=line.color
                     )
                     btn.pack(side="top", fill="x", pady=2)
