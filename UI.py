@@ -73,6 +73,15 @@ class TrainspottingAppUI:
                     x + Constants.UI_STATION_RADIUS, y + Constants.UI_STATION_RADIUS,
                     fill="gray", outline="black", width=1
                 )
+            for i in range(len(sta.cargo_load)):
+                crg = sta.cargo_load[i]
+                # TODO: Use image instead of label
+                lab = self.canvas.create_text(
+                    x - 30 - 8 + 8 * i - (i // 3) * 24,
+                    y - 8 + (i // 3) * 12, text=crg.cargo_type
+                )
+                self.game_entities.append(lab)
+
             lab = self.canvas.create_text(x, y, text = sta.cargo_type)
             self.game_entities.append(dot)
             self.game_entities.append(lab)

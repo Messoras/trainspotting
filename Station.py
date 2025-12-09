@@ -12,6 +12,7 @@ class Station:
         self.position = (x_pos, y_pos)
         self.cargo_type = cargo_type
         self.attached_lines = []
+        self.cargo_load = []
 
 
     def is_clicked(self, x, y):

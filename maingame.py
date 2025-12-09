@@ -1,6 +1,6 @@
 import time
 import asyncio
-from random import randint
+from random import randint, choice
 
 import Constants
 import UI
@@ -46,10 +46,15 @@ class Game:
 
     def spawn_cargo(self):
         """
-        Creates a new cargo object (every x ticks at every station)
+        Creates a new random cargo object (every x ticks at every station)
         :return:
         """
-        pass
+        for sta in self.stations:
+            lst = self.possible_types.copy()
+            lst.remove(sta.cargo_type)
+            c = Cargo(choice(lst),sta)
+            sta.cargo_load.append(c)
+
 
 
     def get_clicked_station(self, x, y):
@@ -104,6 +109,8 @@ class Game:
             c.tick()
         if self.tick_counter % Constants.STATION_SPAWN_TICK_DELAY == 0:
             self.spawn_station()
+        if self.tick_counter % Constants.CARGO_SPAWN_TICK_DELAY == 0:
+            self.spawn_cargo()
         if self.tick_counter % (1000 // Constants.MS_PER_TICK) == 0:
             pass # 1 second
         self.tick_counter += 1
