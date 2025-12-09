@@ -118,7 +118,10 @@ class TrainspottingAppUI:
                 for i in range(len(trn.cargo_load)):
                     crg = trn.cargo_load[i]
                     # TODO: Use image instead of label
-                    lab = self.canvas.create_text(x - 12 + 8 * i, y + (i // 8) * 12, text=crg.cargo_type)
+                    lab = self.canvas.create_text(
+                        x - 8 + 8 * i - (i // 3) * 24,
+                        y - 8 + (i // 3) * 12, text=crg.cargo_type
+                    )
                     self.game_entities.append(lab)
 
             line_iter += 1

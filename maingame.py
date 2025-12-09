@@ -84,6 +84,10 @@ class Game:
         # For simplicity, only allow one train per line for now
         if not line.trains:
             train = Train(line)
+            #TODO: TEST
+            for i in range(6):
+                c = Cargo(randint(0,2),train)
+                train.add_cargo(c)
             line.trains.append(train)
 
 
