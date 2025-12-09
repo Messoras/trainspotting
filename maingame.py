@@ -54,8 +54,10 @@ class Game:
         :param y: y Position
         :return: Station
         """
-        #TODO: implement
-        pass
+        for station in self.stations:
+            if station.is_clicked(x, y):
+                return station
+        return None
 
 
     def tick(self):
