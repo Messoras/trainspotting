@@ -90,15 +90,15 @@ class Line:
 
         return True
 
-    # def shap_checker(self, shape_type: str) -> bool:
-    #     """
-    #     Check if the line services a station of the given shape type.
-    #     The train will only stop at stations of this shape type.
-    #     """
-    #     for station in self.stations:
-    #         if hasattr(station, 'shape_type') and station.shape_type == shape_type:
-    #             return True
-    #     return False
+    def shap_checker(self, shape_type: str) -> bool:
+        """
+        Check if the line services a station of the given shape type.
+        The train will only stop at stations of this shape type.
+        """
+        for station in self.stations:
+            if hasattr(station, 'shape_type') and station.shape_type == shape_type:
+                return True
+        return False
 
     def get_next_stop(self, current_station: 'Station', current_direction: int) -> tuple['Station', int]:
         """

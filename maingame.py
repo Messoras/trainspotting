@@ -17,6 +17,7 @@ class Game:
         self.stations: list['Station'] = []
         self.cargos: list['Cargo'] = []
         self.lines: list['Line'] = []
+        self.trains: list['Train'] = []
         for i in range(Constants.MAX_LINES):
             self.lines.append(Line(Constants.LINE_COLOR[i]))
         self.possible_types = [0, 1, 2]
@@ -81,8 +82,10 @@ class Game:
         Handles all logic that needs to be called continuously to update the game state
         :return: None
         """
+        self.trains = []
         for l in self.lines:
             l.tick()
+            self.trains.extend(l.trains)
         for c in self.cargos:
             c.tick()
         if self.tick_counter % Constants.STATION_SPAWN_TICK_DELAY == 0:
