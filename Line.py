@@ -6,6 +6,7 @@ class Line:
         self.color = color_code
         self.stations: list['Station'] = [] 
         self.trains: list['Train'] = []
+        self.tracks: list[tuple['Station', 'Station']] = []
 
     def tick(self):
         """
@@ -17,28 +18,54 @@ class Line:
 
     def add_station(self, station: 'Station', at_beginning: bool = False):
         """
-        Fügt eine Station zur Linie hinzu.
+         Adds a new station to the line.
         """
         if self.stations:
-            if at_beginning and self.stations[0] == station:
-                return
-            if not at_beginning and self.stations[-1] == station:
-                return
-
-        if at_beginning:
-            self.stations.insert(0, station)
+            if at_beginning:
+                if self.stations[0] == station:
+                    return
+                self.stations.insert(0, station)
+                self.tracks.insert(0, (self.stations[0], self.stations[1]))
+            else:
+                if self.stations[-1] == station:
+                    return
+                self.stations.append(station)
+                self.tracks.append((self.stations[-2], self.stations[-1]))
         else:
             self.stations.append(station)
 
     def remove_station(self, station: 'Station'):
-        """Entfernt eine Station aus der Linie."""
+        """Removes a station from the line."""
         if station in self.stations:
+            index = self.stations.index(station)
+            
+            if len(self.stations) > 1:
+                if index == 0:
+                    self.tracks.pop(0)
+                elif index == len(self.stations) - 1:
+                    self.tracks.pop()
+                else:
+                    prev_station = self.stations[index - 1]
+                    next_station = self.stations[index + 1]
+                    self.tracks.pop(index)
+                    self.tracks.pop(index-1)
+                    self.tracks.insert(index-1, (prev_station, next_station))
+
             self.stations.remove(station)
+
+    def can_delete_track(self, track: tuple['Station', 'Station']) -> bool:
+        """
+        Check if Track can be deleted.
+        """
+        if not self.tracks:
+            return False
+        return track == self.tracks[0] or track == self.tracks[-1]
 
     def is_valid_drag_point(self, station: 'Station') -> bool:
         """
-        Prüft, ob der User von diesem Bahnhof aus die Linie weiterziehen darf.
-        Regel: Nur an den offenen Enden (Start oder Ende) darf gezogen werden.
+        Check if dragging to this station is allowed.
+        Rule 1: If no stations exist, any station is valid.
+        Rule 2: Only the first or last station in the line can be connected to.
         """
         if not self.stations:
             return True
@@ -53,7 +80,7 @@ class Line:
 
     def can_connect_to(self, from_station: 'Station', to_station: 'Station') -> bool:
         """
-        Prüft, ob eine Verbindung zum Zielbahnhof erlaubt ist.
+        Check if a connection between two stations is valid.
         """
         if from_station == to_station:
             return False
@@ -63,22 +90,22 @@ class Line:
 
         return True
 
-    def shap_checker(self, shape_type: str) -> bool:
-        """
-        Prüft, ob diese Linie einen Bahnhof mit der gewünschten Form anfährt.
-        Der Zug nutzt das, um zu entscheiden, ob Passagiere einsteigen dürfen.
-        """
-        for station in self.stations:
-            if hasattr(station, 'shape_type') and station.shape_type == shape_type:
-                return True
-        return False
+    # def shap_checker(self, shape_type: str) -> bool:
+    #     """
+    #     Check if the line services a station of the given shape type.
+    #     The train will only stop at stations of this shape type.
+    #     """
+    #     for station in self.stations:
+    #         if hasattr(station, 'shape_type') and station.shape_type == shape_type:
+    #             return True
+    #     return False
 
     def get_next_stop(self, current_station: 'Station', current_direction: int) -> tuple['Station', int]:
         """
-        current_direction: 1 (vorwärts) oder -1 (rückwärts)
-        # Szenario A: Ende der Linie erreicht
-        # Szenario B: Anfang der Linie erreicht
-        # Szenario C: Normale keep steaming bro
+        current_direction: 1 (forward) or -1 (backward)
+        # Scenario A: End of line reached
+        # Scenario B: Start of line reached
+        # Scenario C: Normal keep steaming bro
         """
         try:
             index = self.stations.index(current_station)

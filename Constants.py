@@ -1,5 +1,3 @@
-#
-
 MAX_LINES = 3
 LINE_COLOR = ["red", "blue", "yellow", "green"]
 ELIMINATION_TIMER = 200
