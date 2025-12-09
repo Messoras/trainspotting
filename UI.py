@@ -89,14 +89,19 @@ class TrainspottingAppUI:
             for i in range(len(trn.cargo_load)):
                 crg = trn.cargo_load[i]
                 #TODO: Use image instead of label
-                lab = self.canvas.create_text(x -12 + 4 * i, y, text = crg.cargo_type)
+                lab = self.canvas.create_text(x - 12 + 8 * i, y + (i // 8) * 12, text = crg.cargo_type)
                 self.game_entities.append(lab)
+
+        # Draw tracks
+        for lin in self.game.lines:
+            pass
+            #TODO: Draw lines
 
         # Handle Selection
         if self.game.selection:
             if type(self.game.selection) == Station: # TODO: possible without importing station?
                 self.draw_station_ui(self.game.selection)
-            else:
+            elif type(self.game.selection) == tuple('Station'):
                 self.draw_line_ui(self.game.selection)
 
 
