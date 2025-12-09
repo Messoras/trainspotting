@@ -22,6 +22,7 @@ class Game:
         self.running = True
         self.tick_counter = 0
         self.last_time = time.perf_counter()
+        self.selection = None
 
         self.spawn_station()
 
@@ -43,6 +44,17 @@ class Game:
         Creates a new cargo object (every x ticks at every station)
         :return:
         """
+        pass
+
+
+    def get_clicked_station(self, x, y):
+        """
+        Returns the first station that touches the given coordinates
+        :param x: x Position
+        :param y: y Position
+        :return: Station
+        """
+        #TODO: implement
         pass
 
 

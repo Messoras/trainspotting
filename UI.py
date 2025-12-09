@@ -31,6 +31,7 @@ class TrainspottingAppUI:
         tk.Label(self.ui_frame, text="").pack(pady=(10, 0))
 
         self.paint_field(0)
+        self.canvas.bind("<Button-1>", self.handle_left_click)
 
 
     def paint_field(self, fps):
@@ -42,14 +43,26 @@ class TrainspottingAppUI:
         self.game_entities.append(fps_str)
         for sta in self.game.stations:
             x, y = sta.position
-            dot = self.canvas.create_oval(
-                x - Constants.UI_STATION_RADIUS, y - Constants.UI_STATION_RADIUS,
-                x + Constants.UI_STATION_RADIUS, y + Constants.UI_STATION_RADIUS,
-                fill="gray", outline="black", width=1
-            )
+            if sta == self.game.selection:
+                dot = self.canvas.create_oval(
+                    x - Constants.UI_STATION_RADIUS, y - Constants.UI_STATION_RADIUS,
+                    x + Constants.UI_STATION_RADIUS, y + Constants.UI_STATION_RADIUS,
+                    fill="lightgray", outline="gray", width=3
+                )
+            else:
+                dot = self.canvas.create_oval(
+                    x - Constants.UI_STATION_RADIUS, y - Constants.UI_STATION_RADIUS,
+                    x + Constants.UI_STATION_RADIUS, y + Constants.UI_STATION_RADIUS,
+                    fill="gray", outline="black", width=1
+                )
             lab = self.canvas.create_text(x, y, text = sta.cargo_type)
             self.game_entities.append(dot)
             self.game_entities.append(lab)
+
+
+    def handle_left_click(self, event):
+        self.game.selection = self.game.get_clicked_station(event.x, event.y)
+
 
     def on_close(self):
         self.game.running = False
