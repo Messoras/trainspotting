@@ -17,6 +17,7 @@ class TrainspottingAppUI:
         self.game = game
         self.game_entities = []
         self.buttons = []
+        self.building_line = None
 
         # Main Frame
         self.main_frame = tk.Frame(master)
@@ -93,9 +94,20 @@ class TrainspottingAppUI:
                 self.game_entities.append(lab)
 
         # Draw tracks
-        for lin in self.game.lines:
-            pass
-            #TODO: Draw lines
+        line_iter = 0
+        for line in self.game.lines:
+            trk_iter = 0
+            for trk in line.tracks:
+                ln = self.canvas.create_line(
+                    trk[0].position[0], trk[0].position[1],
+                    trk[1].position[0], trk[1].position[1],
+                    fill = line.color,
+                    width = 5,
+                    tags = f"{line_iter},{trk_iter}"
+                )
+                self.game_entities.append(ln)
+                trk_iter += 1
+            line_iter += 1
 
         # Handle Selection
         if self.game.selection:
@@ -103,6 +115,13 @@ class TrainspottingAppUI:
                 self.draw_station_ui(self.game.selection)
             elif type(self.game.selection) == tuple('Station'):
                 self.draw_line_ui(self.game.selection)
+
+
+    def find_track_at(self, x, y):
+        overlap = self.canvas.find_overlapping(x - 2, y - 2, x + 2, y + 2)
+        for item in overlap:
+            pass
+            # TODO: return track
 
 
     def draw_station_ui(self, sta):
@@ -114,14 +133,14 @@ class TrainspottingAppUI:
 
 
 
-    def connect_line(self, lin, sta):
+    def connect_line(self, lin_id, sta):
         """
         Starts the track building process
-        :param lin: int - line id for the track to connect with
+        :param lin_id: int - line id for the track to connect with
         :param sta: Station - station to connect the line to
         :return: None
         """
-        pass
+        self.building_line = (lin_id, sta)
 
 
     def draw_line_ui(self, trk):
@@ -160,6 +179,23 @@ class TrainspottingAppUI:
         :param event: mouse event
         :return: None
         """
+        if self.building_line:
+            line_id = self.building_line[0]
+            start_sta = self.building_line[1]
+            sel = self.game.get_clicked_station(event.x, event.y)
+            if sel:
+                # mach line zwischen building_line[1] und sel
+                if len(self.game.lines[line_id].stations) == 0:
+                    self.game.lines[line_id].add_station(start_sta)
+                self.game.lines[line_id].add_station(
+                    sel,
+                    len(self.game.lines[line_id].tracks) == 0 or
+                    start_sta in self.game.lines[line_id].tracks[0]
+                )
+                self.building_line = None
+                self.game.selection = None
+                self.selection_changed()
+                return
         self.game.selection = self.game.get_clicked_station(event.x, event.y)
         self.selection_changed()
 
