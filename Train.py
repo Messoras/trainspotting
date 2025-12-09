@@ -1,11 +1,12 @@
 import Constants
 
 class Train:
-    def __init__(self,line_id):
+    def __init__(self, line_id, x_pos, y_pos):
         """
         Constructor
         :param line_id: int - line to put train on
         """
+        self.position = (x_pos, y_pos)
         self.cargo_load = [] # maximum 6
         self.line_id = line_id
         self.direction = 1 # + -> forward, - -> backwards

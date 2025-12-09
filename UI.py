@@ -76,6 +76,22 @@ class TrainspottingAppUI:
             self.game_entities.append(dot)
             self.game_entities.append(lab)
 
+        # Draw trains
+        for trn in self.game.trains:
+            x, y = trn.position
+            #TODO: Use image instead of rectangle
+            rect = self.canvas.create_rectangle(
+                x - 12, y - 12,
+                x + 12, y + 12
+            )
+            self.game_entities.append(rect)
+            # Draw Cargo (in trains)
+            for i in range(len(trn.cargo_load)):
+                crg = trn.cargo_load[i]
+                #TODO: Use image instead of label
+                lab = self.canvas.create_text(x -12 + 4 * i, y, text = crg.cargo_type)
+                self.game_entities.append(lab)
+
         # Handle Selection
         if self.game.selection:
             if type(self.game.selection) == Station: # TODO: possible without importing station?
