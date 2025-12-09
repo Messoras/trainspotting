@@ -21,6 +21,7 @@ class Game:
             self.lines.append(Line(Constants.LINE_COLOR[i]))
         self.possible_types = [0, 1, 2]
         self.money: int = 100
+        self.score = 0
         self.running = True
         self.tick_counter = 0
         self.last_time = time.perf_counter()
@@ -125,12 +126,17 @@ async def game_loop(game, ui):
 
 
 async def main():
+    """
+    Creates a UI object and starts the asynchronous game loop
+    :return: None
+    """
     g = Game()
     ui = UI.create_ui(g)
     await asyncio.create_task(game_loop(g, ui))
-    # await async_tkinter_loop(ui.master)
 
-
+"""
+Starting script
+"""
 if __name__ == "__main__":
     asyncio.run(main())
 
