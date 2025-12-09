@@ -94,16 +94,20 @@ class TrainspottingAppUI:
                 self.game_entities.append(lab)
 
         # Draw tracks
+        line_iter = 0
         for line in self.game.lines:
+            trk_iter = 0
             for trk in line.tracks:
                 ln = self.canvas.create_line(
                     trk[0].position[0], trk[0].position[1],
                     trk[1].position[0], trk[1].position[1],
                     fill = line.color,
-                    width = 5
+                    width = 5,
+                    tags = f"{line_iter},{trk_iter}"
                 )
                 self.game_entities.append(ln)
-            #TODO: Draw lines
+                trk_iter += 1
+            line_iter += 1
 
         # Handle Selection
         if self.game.selection:
@@ -111,6 +115,13 @@ class TrainspottingAppUI:
                 self.draw_station_ui(self.game.selection)
             elif type(self.game.selection) == tuple('Station'):
                 self.draw_line_ui(self.game.selection)
+
+
+    def find_track_at(self, x, y):
+        overlap = self.canvas.find_overlapping(x - 2, y - 2, x + 2, y + 2)
+        for item in overlap:
+            pass
+            # TODO: return track
 
 
     def draw_station_ui(self, sta):
