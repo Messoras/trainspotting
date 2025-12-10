@@ -22,8 +22,8 @@ class TrainspottingAppUI:
         self.cargo_images = {}
         for cargo_type, image_path in Constants.CARGO_TYPE_TO_IMAGE.items():
             image = tk.PhotoImage(file=image_path)
-            self.cargo_images[cargo_type] = image.subsample(17, 17)
-        self.train_image = tk.PhotoImage(file="img/chocho.png").subsample(10, 10)
+            self.cargo_images[cargo_type] = image.subsample(24)
+        self.train_image = tk.PhotoImage(file="img/chocho.png").subsample(6)
 
         # Main Frame
         self.main_frame = tk.Frame(master)
@@ -198,9 +198,9 @@ class TrainspottingAppUI:
         if not trk[0].can_delete_track(trk[1]):
             btn.disabled = True
             btn.text = "Can't demolish track"
-
-        btn.pack(side="top", fill="x", pady=2)
-        self.buttons.append(btn)
+        else:
+            btn.pack(side="top", fill="x", pady=2)
+            self.buttons.append(btn)
 
     def handle_left_click(self, event):
         """
@@ -277,6 +277,11 @@ class TrainspottingAppUI:
                     self.buttons.append(btn)
 
     def buy_train(self, line):
+        """
+        Adds a train to the specified line, currently only works once
+        :param line: line to add the train to
+        :return: None
+        """
         self.game.buy_train(line)
 
     def on_close(self):

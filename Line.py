@@ -72,7 +72,13 @@ class Line:
             return False
         if type(track) == int:
             return self.can_delete_track(self.tracks[track])
-        return track == self.tracks[0] or track == self.tracks[-1]
+        train_on_track = False
+        for train in self.trains:
+            if self.tracks[train.current_station_index] == track:
+                train_on_track = True
+                break
+        return self.stations[0] == self.stations[-1] or (track == self.tracks[0] or track == self.tracks[-1])
+            #and not train_on_track
 
     def demolish_track(self, track: int):
         """
