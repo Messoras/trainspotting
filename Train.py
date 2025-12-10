@@ -79,28 +79,22 @@ class Train:
                 is_loop = self.line.is_loop()
                 num_stations = len(self.line.stations)
 
+                # First, update index to mark arrival at the new station
+                self.current_station_index += self.direction
+
                 if is_loop:
-                    # Circular movement
-                    if self.direction == 1:
-                        self.current_station_index = (self.current_station_index + 1) % (num_stations - 1)
-                    else:
-                        self.current_station_index = (self.current_station_index - 1 + (num_stations - 1)) % (
-                                    num_stations - 1)
-
-                else:  # Linear track
-                    # 1. advance index to mark arrival at the new station
-                    self.current_station_index += self.direction
-
-                    # 2. decide whether to flip direction for the *next* trip
-                    is_short_line_for_ping_pong = num_stations <= 3
-
-                    if is_short_line_for_ping_pong:
-
-                        if self.current_station_index >= num_stations - 1 and self.direction == 1:
-                            self.direction = -1
-                        elif self.current_station_index <= 0 and self.direction == -1:
-                            self.direction = 1
-
+                    # Then, check for loop wrap-around
+                    if self.current_station_index >= num_stations - 1:
+                        self.current_station_index = 0
+                        # check if turn around is needed
+                    elif self.current_station_index < 0:
+                        self.current_station_index = num_stations - 2
+                else:
+                    # Then, check for direction flip
+                    if self.current_station_index >= num_stations - 1 and self.direction == 1:
+                        self.direction = -1
+                    elif self.current_station_index <= 0 and self.direction == -1:
+                        self.direction = 1
             return
 
         if not self.line.stations or len(self.line.stations) < 2:
