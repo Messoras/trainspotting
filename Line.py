@@ -2,12 +2,12 @@ from Station import *
 from Train import *
 
 class Line:
-    def __init__(self, line_id: int, color_code: str):
+    def __init__(self, line_id: int, line_color: str):
         self.id = line_id
-        self.color = color_code
         self.stations: list['Station'] = [] 
         self.trains: list['Train'] = []
         self.tracks: list[tuple['Station', 'Station']] = []
+        self.color = line_color
 
     def tick(self, tick_counter):
         """
@@ -66,7 +66,6 @@ class Line:
         """
         Check if Track can be deleted.
         :param track: tuple['Station', 'Station'] or int - Track to check
-        TODO: Doesn't return true when it should, also doesn't take trains on the track into consideration
         """
         if not self.tracks:
             return False
@@ -77,8 +76,8 @@ class Line:
             if self.tracks[train.current_station_index] == track:
                 train_on_track = True
                 break
-        return self.stations[0] == self.stations[-1] or (track == self.tracks[0] or track == self.tracks[-1])
-            #and not train_on_track
+        return ((self.stations[0] == self.stations[-1] or track == self.tracks[0] or track == self.tracks[-1])
+                and not train_on_track)
 
     def demolish_track(self, track: int):
         """
@@ -86,11 +85,14 @@ class Line:
         :param track: int - track_id of the track to remove
         :return: None
         """
-        print("Demolish track called")
-        print("Checking before demolishing: ",self.can_delete_track(track))
         if self.can_delete_track(self.tracks[track]):
-            print("Should demolish track")
+            # find station to remove
+            for train in self.trains:
+                train.current_station_index -= 1
+            del self.stations[track]
             del self.tracks[track]
+            if len(self.tracks) == 0:
+                self.stations.clear()
 
     def is_valid_drag_point(self, station: 'Station') -> bool:
         """
@@ -98,10 +100,10 @@ class Line:
         Rule 1: If no stations exist, any station is valid.
         Rule 2: Only the first or last station in the line can be connected to.
         """
-        if not self.stations:
+        if not self.stations or len(self.stations) == 0:
             return True
 
-        if station not in self.stations:
+        elif station not in self.stations:
             return False
 
         is_start = (station == self.stations[0])

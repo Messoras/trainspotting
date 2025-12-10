@@ -2,7 +2,7 @@ import Constants
 import math
 
 class Train:
-    def __init__(self, line, station):
+    def __init__(self, line, station, score_callback):
         """
         Constructor
         :param line: Line object
@@ -12,6 +12,7 @@ class Train:
         self.line_id = line.id
         self.cargo_load = []  
         self.direction = 1
+        self.trigger_score = score_callback
         try:
             self.current_station_index = self.line.stations.index(station)
         except ValueError:
@@ -89,7 +90,9 @@ class Train:
                     self.cargo_load.remove(cargo_to_unload)
                     # not loading station when same type (cargo is at the correct place)
                     # station.add_cargo(cargo_to_unload)
-                    del cargo_to_unload
+                    cargo_to_unload.unlist()
+                    #del cargo_to_unload
+                    self.trigger_score()
                 # Loading
                 elif station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
                     index = next(
@@ -109,10 +112,10 @@ class Train:
         try:
             start_station = self.line.stations[self.current_station_index]
             end_station = self.line.stations[self.current_station_index + self.direction]
-            
+
             x1, y1 = start_station.position
             x2, y2 = end_station.position
-            
+
             distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
             if distance > 0:

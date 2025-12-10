@@ -28,6 +28,7 @@ class Game:
         self.tick_counter = 1
         self.last_time = time.perf_counter()
         self.selection = None
+        self.game_over = False
 
         self.generate_initial_stations()
 
@@ -59,9 +60,19 @@ class Game:
         for sta in self.stations:
             lst = self.possible_types.copy()
             lst.remove(sta.cargo_type)
-            c = Cargo(choice(lst),sta)
+            c = Cargo(choice(lst),sta,self.game_loss,self.unlist_cargo)
             sta.cargo_load.append(c)
+            self.cargos.append(c)
 
+    def unlist_cargo(self, cargo):
+        self.cargos.remove(cargo)
+
+    def game_loss(self):
+        self.game_over = True
+        self.selection = None
+
+    def increment_score(self):
+        self.score += 1
 
 
     def get_clicked_station(self, x, y):
@@ -95,7 +106,7 @@ class Game:
         """
         # For simplicity, only allow one train per line for now
         if len(line.trains) <= Constants.MAX_TRAINS_PER_LINE: # and check available trains or buy price
-            train = Train(line, station)
+            train = Train(line, station, self.increment_score)
             line.trains.append(train)
 
 

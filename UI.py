@@ -20,9 +20,11 @@ class TrainspottingAppUI:
         self.buttons = []
         self.building_line = None
         self.cargo_images = {}
+        self.cargo_images_small = {}
         for cargo_type, image_path in Constants.CARGO_TYPE_TO_IMAGE.items():
             image = tk.PhotoImage(file=image_path)
             self.cargo_images[cargo_type] = image.subsample(24)
+            self.cargo_images_small[cargo_type] = image.subsample(32)
         self.train_image = tk.PhotoImage(file="img/chocho.png").subsample(6)
 
         # Main Frame
@@ -54,6 +56,33 @@ class TrainspottingAppUI:
         :param fps: int - Frames per second calculated inside the game loop
         :return: None
         """
+        if self.game.game_over:
+            self.selection_changed() # clear UI
+            # Draw LOSS Screen
+            loss_cube = self.canvas.create_rectangle(
+                0, 0,
+                Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN, Constants.UI_HEIGHT,
+                fill = "black",
+                stipple = "gray75"
+            )
+            self.game_entities.append(loss_cube)
+            loss_text = self.canvas.create_text(
+                (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2,
+                text = "You lost!",
+                anchor = "n",
+                font = ("Arial", 36, "bold"),
+                fill = "red"
+            )
+            self.game_entities.append(loss_text)
+            info_text = self.canvas.create_text(
+                (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 100,
+                text = f"You didn't deliver the cargo in time. \nYour score: {self.game.score}",
+                anchor = "n",
+                font = ("Arial", 16),
+                fill = "white"
+            )
+            return
+
         # Clear previous frame
         for item in self.game_entities:
             self.canvas.delete(item)
@@ -63,38 +92,14 @@ class TrainspottingAppUI:
         fps_str = self.canvas.create_text(20, 20, text=f"TPS: {fps:.2f}", anchor="w")
         self.game_entities.append(fps_str)
 
+        # Draw Score
+        score_text = self.canvas.create_text(1000, 20, text = f"Score: {self.game.score}")
+        self.game_entities.append(score_text)
+
         # Draw building info
         if self.building_line:
             info_text = self.canvas.create_text(20, 50, text=f"Currently building line {self.building_line[0]}", anchor="w")
             self.game_entities.append(info_text)
-
-        # Draw stations
-        for sta in self.game.stations:
-            x, y = sta.position
-            if sta == self.game.selection:
-                dot = self.canvas.create_oval(
-                    x - Constants.UI_STATION_RADIUS, y - Constants.UI_STATION_RADIUS,
-                    x + Constants.UI_STATION_RADIUS, y + Constants.UI_STATION_RADIUS,
-                    fill="lightgray", outline="gray", width=3
-                )
-            else:
-                dot = self.canvas.create_oval(
-                    x - Constants.UI_STATION_RADIUS, y - Constants.UI_STATION_RADIUS,
-                    x + Constants.UI_STATION_RADIUS, y + Constants.UI_STATION_RADIUS,
-                    fill="gray", outline="black", width=1
-                )
-            lab = self.canvas.create_image(x, y, image=self.cargo_images[sta.cargo_type])
-            self.game_entities.append(dot)
-            self.game_entities.append(lab)
-
-            for i in range(len(sta.cargo_load)):
-                crg = sta.cargo_load[i]
-                img = self.canvas.create_image(
-                    x + Constants.UI_STATION_RADIUS + 10 + (i % 3) * 20,
-                    y - Constants.UI_STATION_RADIUS + 10 + (i // 3) * 20,
-                    image=self.cargo_images[crg.cargo_type]
-                )
-                self.game_entities.append(img)
 
         # Draw tracks
         line_iter = 0
@@ -120,7 +125,51 @@ class TrainspottingAppUI:
                     )
                     self.game_entities.append(highlight)
                 trk_iter += 1
+            line_iter += 1
 
+            # Draw stations
+            for sta in self.game.stations:
+                x, y = sta.position
+                if sta == self.game.selection:
+                    dot = self.canvas.create_oval(
+                        x - Constants.UI_STATION_RADIUS, y - Constants.UI_STATION_RADIUS,
+                        x + Constants.UI_STATION_RADIUS, y + Constants.UI_STATION_RADIUS,
+                        fill="lightgray", outline="gray", width=3
+                    )
+                else:
+                    dot = self.canvas.create_oval(
+                        x - Constants.UI_STATION_RADIUS, y - Constants.UI_STATION_RADIUS,
+                        x + Constants.UI_STATION_RADIUS, y + Constants.UI_STATION_RADIUS,
+                        fill="gray", outline="black", width=1
+                    )
+                lab = self.canvas.create_image(x, y, image=self.cargo_images[sta.cargo_type])
+                self.game_entities.append(dot)
+                self.game_entities.append(lab)
+
+                # Draw cargo (in stations)
+                for i in range(len(sta.cargo_load)):
+                    crg = sta.cargo_load[i]
+                    crg_x = x + Constants.UI_STATION_RADIUS + 20 + (i % 3) * 20
+                    crg_y = y - Constants.UI_STATION_RADIUS + (i // 3) * 20
+                    if crg.elimination_timer < 500 and (self.game.tick_counter // Constants.FLICKER_DURATION) % 2 == 0:
+                        x1 = crg_x - self.cargo_images_small[crg.cargo_type].width() // 2 - 3
+                        y1 = crg_y - self.cargo_images_small[crg.cargo_type].height() // 2 - 3
+                        x2 = crg_x + self.cargo_images_small[crg.cargo_type].width() // 2 + 4
+                        y2 = crg_y + self.cargo_images_small[crg.cargo_type].height() // 2 + 4
+                        warn = self.canvas.create_oval(
+                            x1,y1,x2,y2,
+                            fill = "red"
+                        )
+                        self.game_entities.append(warn)
+                    img = self.canvas.create_image(
+                        crg_x,
+                        crg_y,
+                        image=self.cargo_images_small[crg.cargo_type]
+                    )
+                    self.game_entities.append(img)
+
+
+        for line in self.game.lines:
             # Draw trains
             for trn in line.trains:
                 x, y = trn.position
@@ -131,20 +180,11 @@ class TrainspottingAppUI:
                 for i in range(len(trn.cargo_load)):
                     crg = trn.cargo_load[i]
                     img = self.canvas.create_image(
-                        x - 8 + (i % 3) * 10,
-                        y - 8 + (i // 3) * 10,
-                        image=self.cargo_images[crg.cargo_type]
+                        x + 24 + (i % 3) * 20,
+                        y - 8 + (i // 3) * 20,
+                        image=self.cargo_images_small[crg.cargo_type]
                     )
                     self.game_entities.append(img)
-
-            line_iter += 1
-
-        # Handle Selection
-        if self.game.selection:
-            if type(self.game.selection) == Station:  # TODO: possible without importing station?
-                self.draw_station_ui(self.game.selection)
-            elif type(self.game.selection) == tuple:
-                self.draw_line_ui(self.game.selection)
 
     def find_track_at(self, x, y):
         """
@@ -161,16 +201,38 @@ class TrainspottingAppUI:
                 strarr = tags[0].split(",")
                 return self.game.lines[int(strarr[0])], int(strarr[1])
             except Exception as ex:
-                print(ex)
+                # Found picture or something else
+                # print(ex)
                 continue
         return None
 
-    def draw_station_ui(self, sta):
+    def draw_station_ui(self, sel):
         """
         Called when a station is selected. Adds buttons for the available lines to build.
-        :param sta: station - selected item from main game
+        :param sel: station - selected item from main game
         :return: None
         """
+        # Add buttons to build lines
+        for lin in self.game.get_available_lines(sel):
+            btn = tk.Button(
+                self.ui_frame,
+                text=f"Line {lin}",
+                command=lambda l_id=lin: self.connect_line(l_id, sel),
+                bg=Constants.LINE_COLOR[lin]
+            )
+            btn.pack(side="top", fill="x", pady=2)
+            self.buttons.append(btn)
+
+        for line in self.game.lines:
+            if sel in line.stations and len(line.stations) >= 2:
+                btn = tk.Button(
+                    self.ui_frame,
+                    text=f"Buy Train for Line {line.id}",
+                    command=lambda ln=line, st=sel: self.buy_train(ln, st),
+                    bg=line.color
+                )
+                btn.pack(side="top", fill="x", pady=2)
+                self.buttons.append(btn)
 
     def connect_line(self, lin_id, sta):
         """
@@ -187,16 +249,13 @@ class TrainspottingAppUI:
         :param trk: Line.Track - selected track
         :return: None
         """
-        # Clear previous buttons
-        for item in self.buttons:
-            item.destroy()
-        self.buttons.clear()
+        # Clear previous buttons is handled in selection_changed()
 
         # Add Line destruction button
         btn = tk.Button(
             self.ui_frame,
             text="Demolish track",
-            command=lambda track = trk: track[0].demolish_track(track[1]) # TODO: FIX
+            command=lambda lin = trk[0], track = trk[1]: lin.demolish_track(track)
         )
 
         # Disable button if track can't be removed
@@ -218,7 +277,6 @@ class TrainspottingAppUI:
             start_sta = self.building_line[1]
             sel = self.game.get_clicked_station(event.x, event.y)
             if sel:
-                # print(self.building_line)
                 # Connect selection and start station
                 if len(self.game.lines[line_id].stations) == 0:
                     self.game.lines[line_id].add_station(start_sta)
@@ -259,27 +317,10 @@ class TrainspottingAppUI:
             return
 
         elif type(sel) == Station:
-            # Add buttons to build lines
-            for lin in self.game.get_available_lines(sel):
-                btn = tk.Button(
-                    self.ui_frame,
-                    text=f"Line {lin}",
-                    command=lambda l_id=lin: self.connect_line(l_id, sel),
-                    bg=Constants.LINE_COLOR[lin]
-                )
-                btn.pack(side="top", fill="x", pady=2)
-                self.buttons.append(btn)
+            self.draw_station_ui(self.game.selection)
 
-            for line in self.game.lines:
-                if sel in line.stations and len(line.stations) >= 2:
-                    btn = tk.Button(
-                        self.ui_frame,
-                        text=f"Buy Train for Line {line.id}",
-                        command=lambda ln=line, st=sel: self.buy_train(ln, st),
-                        bg=line.color
-                    )
-                    btn.pack(side="top", fill="x", pady=2)
-                    self.buttons.append(btn)
+        elif type(sel) == tuple:
+            self.draw_line_ui(self.game.selection)
 
     def buy_train(self, line, station):
         """
