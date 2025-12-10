@@ -35,18 +35,12 @@ class Train:
         start_station_index = self.current_station_index
         end_station_index = self.current_station_index + self.direction
 
-        
-        if self.direction == 1:
-            if end_station_index >= len(self.line.stations):
-
-                return self.line.stations[start_station_index].position
-        else: 
-             if end_station_index < 0:
-
-                return self.line.stations[start_station_index].position
-
-        start_station = self.line.stations[start_station_index]
-        end_station = self.line.stations[end_station_index]
+        try:
+            start_station = self.line.stations[start_station_index]
+            end_station = self.line.stations[end_station_index]
+        except IndexError:
+            # At the end of the line, return the last station's position
+            return self.line.stations[start_station_index].position
 
         x1, y1 = start_station.position
         x2, y2 = end_station.position
@@ -112,27 +106,21 @@ class Train:
         if not self.line.stations or len(self.line.stations) < 2:
             return
 
-        start_station_index = self.current_station_index
-        end_station_index = self.current_station_index + self.direction
+        try:
+            start_station = self.line.stations[self.current_station_index]
+            end_station = self.line.stations[self.current_station_index + self.direction]
+            
+            x1, y1 = start_station.position
+            x2, y2 = end_station.position
+            
+            distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
-        if self.direction == 1:
-            if end_station_index >= len(self.line.stations):
-                return
-        else: 
-             if end_station_index < 0:
-                return
-
-        start_station = self.line.stations[start_station_index]
-        end_station = self.line.stations[end_station_index]
-
-        x1, y1 = start_station.position
-        x2, y2 = end_station.position
-        
-        distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-
-        if distance > 0:
-            self.progress += Constants.TRAIN_SPEED / distance
-        else:
+            if distance > 0:
+                self.progress += Constants.TRAIN_SPEED / distance
+            else:
+                self.progress = 1.0
+        except IndexError:
+            # At the end of the line, just arrive instantly
             self.progress = 1.0
 
         # Arrived at new station
