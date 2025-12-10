@@ -23,7 +23,7 @@ class Train:
         if not self.line.stations:
             return 0, 0 
 
-        # when at station TODO: this is 1 behind
+        # when at station
         if self.progress == 0.0:
             return self.line.stations[self.current_station_index].position
 
@@ -59,27 +59,6 @@ class Train:
         # during stop
         if self.wait_timer > 0:
             self.wait_timer -= 1
-
-            # Continue driving
-            if self.wait_timer == 0:
-                self.progress = 0.0
-
-                is_loop = self.line.is_loop()
-                num_stations = len(self.line.stations)
-
-                if is_loop:
-                    # Then, check for loop wrap-around
-                    if self.current_station_index >= num_stations - 1:
-                        self.current_station_index = 0
-                        # check if turn around is needed
-                    elif self.current_station_index < 0:
-                        self.current_station_index = num_stations - 2
-                else:
-                    # Then, check for direction flip
-                    if self.current_station_index >= num_stations - 1 and self.direction == 1:
-                        self.direction = -1
-                    elif self.current_station_index <= 0 and self.direction == -1:
-                        self.direction = 1
 
             # While standing at station
             if tick_counter % Constants.CARGO_DEPLOY_TIME == 0:
@@ -128,12 +107,24 @@ class Train:
 
         # Arrived at new station
         if self.progress >= 1.0:
-            self.progress = 0
+            self.progress = 0.0
             # First, update index to mark arrival at the new station
             self.current_station_index += self.direction
             self.wait_timer = Constants.CARGO_DEPLOY_TIME * Constants.CARGO_SPOTS_PER_TROLLEY * 2
-            
-            # TODO: Handle cargo loading/unloading at the station
+
+            is_loop = self.line.is_loop()
+            num_stations = len(self.line.stations)
+
+            if not is_loop:
+                # Then, check for direction flip
+                if self.current_station_index >= num_stations - 1 and self.direction == 1:
+                    self.direction = -1
+                elif self.current_station_index <= 0 and self.direction == -1:
+                    self.direction = 1
+            else:
+                # It's a loop, wrap around
+                if self.current_station_index >= num_stations - 1:
+                    self.current_station_index = 0
 
     def add_cargo(self, cargo):
         """
