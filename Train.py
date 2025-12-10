@@ -2,16 +2,20 @@ import Constants
 import math
 
 class Train:
-    def __init__(self, line):
+    def __init__(self, line, station):
         """
         Constructor
         :param line: Line object
+        :param station: Station object where the train will spawn
         """
         self.line = line
         self.line_id = line.id
         self.cargo_load = []  
-        self.direction = 1  
-        self.current_station_index = 0
+        self.direction = 1
+        try:
+            self.current_station_index = self.line.stations.index(station)
+        except ValueError:
+            self.current_station_index = 0  # Default to 0 if station not found
         self.progress = 0.0 
         self.wait_timer = 0
     @property

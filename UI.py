@@ -270,19 +270,20 @@ class TrainspottingAppUI:
                     btn = tk.Button(
                         self.ui_frame,
                         text=f"Buy Train for Line {line.id}",
-                        command=lambda ln=line: self.buy_train(ln),
+                        command=lambda ln=line, st=sel: self.buy_train(ln, st),
                         bg=line.color
                     )
                     btn.pack(side="top", fill="x", pady=2)
                     self.buttons.append(btn)
 
-    def buy_train(self, line):
+    def buy_train(self, line, station):
         """
         Adds a train to the specified line, currently only works once
         :param line: line to add the train to
+        :param station: station where the train is bought
         :return: None
         """
-        self.game.buy_train(line)
+        self.game.buy_train(line, station)
 
     def on_close(self):
         """

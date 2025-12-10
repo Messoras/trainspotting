@@ -39,6 +39,5 @@ Some functions are only called once after a set amount of ticks:
 - Demolishing track pieces
 - Graphics
 - bugfixing:
-  * Train randomly stopping
   * Clicking on lines 2 times causes crash
   * building lines and clicking something else than a station can cause weird bugs

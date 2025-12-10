@@ -89,13 +89,13 @@ class Game:
         return res
 
 
-    def buy_train(self, line):
+    def buy_train(self, line, station):
         """
         Creates a new train on the given line if there are none.
         """
         # For simplicity, only allow one train per line for now
         if len(line.trains) <= Constants.MAX_TRAINS_PER_LINE: # and check available trains or buy price
-            train = Train(line)
+            train = Train(line, station)
             line.trains.append(train)
 
 
