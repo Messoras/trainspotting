@@ -23,6 +23,7 @@ class TrainspottingAppUI:
         for cargo_type, image_path in Constants.CARGO_TYPE_TO_IMAGE.items():
             image = tk.PhotoImage(file=image_path)
             self.cargo_images[cargo_type] = image.subsample(17, 17)
+        self.train_image = tk.PhotoImage(file="img/chocho.png").subsample(10, 10)
 
         # Main Frame
         self.main_frame = tk.Frame(master)
@@ -115,16 +116,11 @@ class TrainspottingAppUI:
                     self.game_entities.append(highlight)
                 trk_iter += 1
 
-            # Draw trains (in line)
+            # Draw trains
             for trn in line.trains:
                 x, y = trn.position
-                # TODO: Use image instead of rectangle
-                rect = self.canvas.create_rectangle(
-                    x - 12, y - 12,
-                    x + 12, y + 12,
-                    fill=Constants.LINE_COLOR[line_iter]
-                )
-                self.game_entities.append(rect)
+                img = self.canvas.create_image(x, y, image=self.train_image)
+                self.game_entities.append(img)
 
                 # Draw Cargo (in trains)
                 for i in range(len(trn.cargo_load)):
