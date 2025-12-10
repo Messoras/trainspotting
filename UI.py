@@ -63,6 +63,11 @@ class TrainspottingAppUI:
         fps_str = self.canvas.create_text(20, 20, text=f"TPS: {fps:.2f}", anchor="w")
         self.game_entities.append(fps_str)
 
+        # Draw building info
+        if self.building_line:
+            info_text = self.canvas.create_text(20, 50, text=f"Currently building line {self.building_line[0]}", anchor="w")
+            self.game_entities.append(info_text)
+
         # Draw stations
         for sta in self.game.stations:
             x, y = sta.position
@@ -222,10 +227,10 @@ class TrainspottingAppUI:
                     len(self.game.lines[line_id].tracks) == 0 or
                     start_sta == self.game.lines[line_id].stations[0]
                 )
-                self.building_line = None
-                self.game.selection = None
+                self.game.selection = sel
                 self.selection_changed()
-                return
+            self.building_line = None
+            return
 
         self.game.selection = self.game.get_clicked_station(event.x, event.y)
         if not self.game.selection:
