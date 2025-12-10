@@ -3,6 +3,7 @@ import tkinter as tk
 import Constants
 from Station import Station
 
+
 class TrainspottingAppUI:
     def __init__(self, master, game):
         """
@@ -30,14 +31,14 @@ class TrainspottingAppUI:
         # Canvas on the left
         self.canvas = tk.Canvas(
             self.main_frame,
-            width = Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN,
-            height = Constants.UI_HEIGHT,
-            bg = "whitesmoke"
+            width=Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN,
+            height=Constants.UI_HEIGHT,
+            bg="whitesmoke"
         )
         self.canvas.pack(side="left", fill="both", expand=True)
 
         # UI panel on the right
-        self.ui_frame = tk.Frame(self.main_frame, width = Constants.UI_SIDEBAR_MARGIN)
+        self.ui_frame = tk.Frame(self.main_frame, width=Constants.UI_SIDEBAR_MARGIN)
         self.ui_frame.pack(side="right", fill="y")
         self.ui_frame.pack_propagate(False)
 
@@ -45,7 +46,6 @@ class TrainspottingAppUI:
 
         self.paint_field(0)
         self.canvas.bind("<Button-1>", self.handle_left_click)
-
 
     def paint_field(self, fps):
         """
@@ -59,7 +59,7 @@ class TrainspottingAppUI:
         self.game_entities.clear()
 
         # Draw FPS string
-        fps_str = self.canvas.create_text(20, 20, text = f"TPS: {fps:.2f}", anchor = "w")
+        fps_str = self.canvas.create_text(20, 20, text=f"TPS: {fps:.2f}", anchor="w")
         self.game_entities.append(fps_str)
 
         # Draw stations
@@ -90,7 +90,6 @@ class TrainspottingAppUI:
                 )
                 self.game_entities.append(img)
 
-
         # Draw tracks
         line_iter = 0
         for line in self.game.lines:
@@ -99,9 +98,9 @@ class TrainspottingAppUI:
                 ln = self.canvas.create_line(
                     trk[0].position[0], trk[0].position[1],
                     trk[1].position[0], trk[1].position[1],
-                    fill = line.color,
-                    width = 5,
-                    tags = f"{line_iter},{trk_iter}"
+                    fill=line.color,
+                    width=5,
+                    tags=f"{line_iter},{trk_iter}"
                 )
                 self.game_entities.append(ln)
                 if (type(self.game.selection) == tuple and
@@ -110,8 +109,8 @@ class TrainspottingAppUI:
                     highlight = self.canvas.create_line(
                         trk[0].position[0], trk[0].position[1],
                         trk[1].position[0], trk[1].position[1],
-                        fill = "white",
-                        width = 2
+                        fill="white",
+                        width=2
                     )
                     self.game_entities.append(highlight)
                 trk_iter += 1
@@ -123,7 +122,7 @@ class TrainspottingAppUI:
                 rect = self.canvas.create_rectangle(
                     x - 12, y - 12,
                     x + 12, y + 12,
-                    fill = Constants.LINE_COLOR[line_iter]
+                    fill=Constants.LINE_COLOR[line_iter]
                 )
                 self.game_entities.append(rect)
 
@@ -141,11 +140,10 @@ class TrainspottingAppUI:
 
         # Handle Selection
         if self.game.selection:
-            if type(self.game.selection) == Station: # TODO: possible without importing station?
+            if type(self.game.selection) == Station:  # TODO: possible without importing station?
                 self.draw_station_ui(self.game.selection)
             elif type(self.game.selection) == tuple:
                 self.draw_line_ui(self.game.selection)
-
 
     def find_track_at(self, x, y):
         """
@@ -166,15 +164,12 @@ class TrainspottingAppUI:
                 continue
         return None
 
-
     def draw_station_ui(self, sta):
         """
         Called when a station is selected. Adds buttons for the available lines to build.
         :param sta: station - selected item from main game
         :return: None
         """
-
-
 
     def connect_line(self, lin_id, sta):
         """
@@ -184,7 +179,6 @@ class TrainspottingAppUI:
         :return: None
         """
         self.building_line = (lin_id, sta)
-
 
     def draw_line_ui(self, trk):
         """
@@ -200,22 +194,16 @@ class TrainspottingAppUI:
         # Add Line destruction button
         btn = tk.Button(
             self.ui_frame,
-            text = "Demolish track",
-            command = lambda: self.demolish_track(trk)
+            text="Demolish track",
+            command=lambda: trk[0].demolish_track(trk[1])
         )
+
+        # Disable button if track can't be removed
+        if not trk[0].can_delete_track(trk[1]):
+            btn.disabled = True
+
         btn.pack(side="top", fill="x", pady=2)
         self.buttons.append(btn)
-
-
-    def demolish_track(self, trk):
-        """
-        Destroys the selected track and disconnects it from the network
-        :param trk: Line.Track - selected track
-        :return: None
-        """
-        # TODO: Implement
-        pass
-
 
     def handle_left_click(self, event):
         """
@@ -246,7 +234,6 @@ class TrainspottingAppUI:
         if not self.game.selection:
             self.game.selection = self.find_track_at(event.x, event.y)
         self.selection_changed()
-
 
     def selection_changed(self):
         """
@@ -281,13 +268,12 @@ class TrainspottingAppUI:
                 btn.pack(side="top", fill="x", pady=2)
                 self.buttons.append(btn)
 
-
             for line in self.game.lines:
                 if sel in line.stations and len(line.stations) >= 2:
                     btn = tk.Button(
                         self.ui_frame,
                         text=f"Buy Train for Line {line.id}",
-                        command=lambda ln = line: self.buy_train(ln),
+                        command=lambda ln=line: self.buy_train(ln),
                         bg=line.color
                     )
                     btn.pack(side="top", fill="x", pady=2)
@@ -295,7 +281,6 @@ class TrainspottingAppUI:
 
     def buy_train(self, line):
         self.game.buy_train(line)
-
 
     def on_close(self):
         """

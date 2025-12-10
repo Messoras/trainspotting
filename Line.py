@@ -56,13 +56,26 @@ class Line:
 
             self.stations.remove(station)
 
-    def can_delete_track(self, track: tuple['Station', 'Station']) -> bool:
+    def can_delete_track(self, track) -> bool:
         """
         Check if Track can be deleted.
+        :param track: tuple['Station', 'Station'] or int - Track to check
+        TODO: Doesn't return true when it should, also doesn't take trains on the track into consideration
         """
         if not self.tracks:
             return False
+        if type(track) == int:
+            return self.can_delete_track(self.tracks[track])
         return track == self.tracks[0] or track == self.tracks[-1]
+
+    def demolish_track(self, track: int):
+        """
+        Removes the track from the line
+        :param track: int - track_id of the track to remove
+        :return: None
+        """
+        if self.can_delete_track(self.tracks[track]):
+            del self.tracks[track]
 
     def is_valid_drag_point(self, station: 'Station') -> bool:
         """
