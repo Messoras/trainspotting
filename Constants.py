@@ -1,6 +1,6 @@
 MAX_LINES = 3
 LINE_COLOR = ["red", "blue", "yellow", "green"]
-CARGO_TYPE_NAMES = ["coal", "crystal", "gold"]
+CARGO_TYPE_NAMES = ["coal", "wood", "gold", "crystal"]
 CARGO_TYPE_TO_IMAGE = {
     0: "img/coal.png",
     1: "img/wood.png",

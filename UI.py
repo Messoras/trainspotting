@@ -191,7 +191,7 @@ class TrainspottingAppUI:
         btn = tk.Button(
             self.ui_frame,
             text="Demolish track",
-            command=lambda: trk[0].demolish_track(trk[1])
+            command=lambda track = trk: track[0].demolish_track(track[1]) # TODO: FIX
         )
 
         # Disable button if track can't be removed

@@ -86,6 +86,8 @@ class Line:
         :param track: int - track_id of the track to remove
         :return: None
         """
+        print("Demolish track called")
+        print("Checking before demolishing: ",self.can_delete_track(track))
         if self.can_delete_track(self.tracks[track]):
             print("Should demolish track")
             del self.tracks[track]

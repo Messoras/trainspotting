@@ -56,6 +56,26 @@ class Train:
         
         return x, y
 
+    def moving_towards(self, cargo_type):
+        """
+        Checks if the train goes towards the given cargo type
+        :param cargo_type: int - Cargo type
+        :return: Bool
+        """
+        if self.line.stations[0] == self.line.stations[-1]:
+            return True
+        else:
+            sta_lst = []
+            if self.direction == 1:
+                sta_lst.extend(self.line.stations[self.current_station_index+1:])
+            else:
+                sta_lst.extend(self.line.stations[:self.current_station_index])
+            #print([Constants.CARGO_TYPE_NAMES[st.cargo_type] for st in sta_lst])
+            for sta in sta_lst:
+                if sta.cargo_type == cargo_type:
+                    return True
+            return False
+
     def update(self, tick_counter):
         """
         Updates the train's progress on the line.
@@ -68,7 +88,9 @@ class Train:
             if tick_counter % Constants.CARGO_DEPLOY_TIME == 0:
                 station = self.line.stations[self.current_station_index]
                 # Unloading
-                cargo_to_unload = next((c for c in self.cargo_load if c.cargo_type == station.cargo_type), None)
+                cargo_to_unload = next(
+                    (c for c in self.cargo_load if c.cargo_type == station.cargo_type
+                     ), None)
                 if cargo_to_unload:
                     self.cargo_load.remove(cargo_to_unload)
                     # not loading station when same type (cargo is at the correct place)
@@ -76,9 +98,13 @@ class Train:
                     del cargo_to_unload
                 # Loading
                 elif station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
-                    cargo_to_load = station.get_cargo()
-                    if cargo_to_load:
+                    index = next(
+                        (station.cargo_load.index(c) for c in station.cargo_load if self.moving_towards(c.cargo_type)), -1
+                    )
+                    if index != -1:
+                        cargo_to_load = station.cargo_load[index]
                         self.add_cargo(cargo_to_load)
+                        del station.cargo_load[index]
 
             return
 

@@ -38,6 +38,6 @@ Some functions are only called once after a set amount of ticks:
 - Disabling track building when line is a circle
 - Demolishing track pieces
 - Graphics
-- bugfixing:
+- Bug fixing:
   * Clicking on lines 2 times causes crash
   * building lines and clicking something else than a station can cause weird bugs
