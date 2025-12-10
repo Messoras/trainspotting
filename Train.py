@@ -61,7 +61,7 @@ class Train:
                 self.progress = 0.0
                 self.current_station_index += self.direction
 
-                if self.current_station_index >= len(self.line.stations) - 1 and self.direction == 1:
+                if self.current_station_index >= len(self.line.stations) - 1 and self.direction == 1 and self.line.stations[0] != self.line.stations[-1]:
                     self.direction = -1
                 elif self.current_station_index <= 0 and self.direction == -1:
                     self.direction = 1
