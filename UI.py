@@ -152,8 +152,14 @@ class TrainspottingAppUI:
         """
         overlap = self.canvas.find_overlapping(x - 2, y - 2, x + 2, y + 2)
         for item in overlap:
-            strarr = self.canvas.gettags(item)[0].split(",")
-            return self.game.lines[int(strarr[0])], int(strarr[1])
+            tags = self.canvas.gettags(item)
+            # print(f"Checking item with tags: {tags}")
+            try:
+                strarr = tags[0].split(",")
+                return self.game.lines[int(strarr[0])], int(strarr[1])
+            except IndexError:
+                print("!!! This is a mother fucking invtervention !!!")
+                continue
         return None
 
 
@@ -184,7 +190,7 @@ class TrainspottingAppUI:
         """
         # Clear previous buttons
         for item in self.buttons:
-            self.canvas.delete(item)
+            item.destroy()
         self.buttons.clear()
 
         # Add Line destruction button
@@ -193,6 +199,7 @@ class TrainspottingAppUI:
             text = "Demolish track",
             command = lambda: self.demolish_track(trk)
         )
+        btn.pack(side="top", fill="x", pady=2)
         self.buttons.append(btn)
 
 

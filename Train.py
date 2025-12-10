@@ -57,14 +57,33 @@ class Train:
         """
         if self.wait_timer > 0:
             self.wait_timer -= 1
-            if self.wait_timer == 0: 
+            if self.wait_timer == 0:
                 self.progress = 0.0
-                self.current_station_index += self.direction
 
-                if self.current_station_index >= len(self.line.stations) - 1 and self.direction == 1 and self.line.stations[0] != self.line.stations[-1]:
-                    self.direction = -1
-                elif self.current_station_index <= 0 and self.direction == -1:
-                    self.direction = 1
+                is_loop = self.line.is_loop()
+                num_stations = len(self.line.stations)
+
+                if is_loop:
+                    # Circular movement
+                    if self.direction == 1:
+                        self.current_station_index = (self.current_station_index + 1) % (num_stations - 1)
+                    else:
+                        self.current_station_index = (self.current_station_index - 1 + (num_stations - 1)) % (num_stations - 1)
+
+                else: # Linear track
+                    # 1. advance index to mark arrival at the new station
+                    self.current_station_index += self.direction
+                    
+                    # 2. decide whether to flip direction for the *next* trip
+                    is_short_line_for_ping_pong = num_stations <= 3
+
+                    if is_short_line_for_ping_pong:
+                        
+                        if self.current_station_index >= num_stations - 1 and self.direction == 1:
+                            self.direction = -1
+                        elif self.current_station_index <= 0 and self.direction == -1:
+                            self.direction = 1
+
             return
 
         if not self.line.stations or len(self.line.stations) < 2:

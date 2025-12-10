@@ -27,6 +27,8 @@ class Line:
                     return
                 self.stations.insert(0, station)
                 self.tracks.insert(0, (self.stations[0], self.stations[1]))
+                for train in self.trains:
+                    train.current_station_index += 1
             else:
                 if self.stations[-1] == station:
                     return
@@ -90,6 +92,10 @@ class Line:
             return False
 
         return True
+
+    def is_loop(self) -> bool:
+        """Checks if the line is a closed loop."""
+        return len(self.stations) > 2 and self.stations[0] == self.stations[-1]
 
     def shap_checker(self, shape_type: str) -> bool:
         """
