@@ -29,7 +29,14 @@ class Game:
         self.last_time = time.perf_counter()
         self.selection = None
 
-        self.spawn_station()
+        self.generate_initial_stations()
+
+    def generate_initial_stations(self):
+        for i in range(len(self.possible_types)):
+            x = randint(0 + Constants.EDGE_MARGIN, Constants.FIELD_WIDTH - Constants.EDGE_MARGIN)
+            y = randint(0 + Constants.EDGE_MARGIN, Constants.FIELD_HEIGHT - Constants.EDGE_MARGIN)
+            c_type = i
+            self.stations.append(Station(x, y, c_type))
 
 
     def spawn_station(self):

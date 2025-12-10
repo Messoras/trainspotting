@@ -161,8 +161,8 @@ class TrainspottingAppUI:
             try:
                 strarr = tags[0].split(",")
                 return self.game.lines[int(strarr[0])], int(strarr[1])
-            except IndexError:
-                print("!!! This is a mother fucking invtervention !!!")
+            except Exception as ex:
+                print(ex)
                 continue
         return None
 
@@ -228,7 +228,7 @@ class TrainspottingAppUI:
             start_sta = self.building_line[1]
             sel = self.game.get_clicked_station(event.x, event.y)
             if sel:
-                print(self.building_line)
+                # print(self.building_line)
                 # Connect selection and start station
                 if len(self.game.lines[line_id].stations) == 0:
                     self.game.lines[line_id].add_station(start_sta)

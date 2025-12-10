@@ -19,14 +19,15 @@ class Train:
         """
         Calculates the x, y position of the train on the track.
         """
+        # catch some bugs
         if not self.line.stations:
             return 0, 0 
 
-        
+        # when at station TODO: this is 1 behind
         if self.progress == 0.0:
             return self.line.stations[self.current_station_index].position
 
-        
+        # when on the road
         start_station_index = self.current_station_index
         end_station_index = self.current_station_index + self.direction
 
@@ -55,32 +56,16 @@ class Train:
         """
         Updates the train's progress on the line.
         """
+        # during stop
         if self.wait_timer > 0:
             self.wait_timer -= 1
 
-            if tick_counter % 2 == 0:
-                station = self.line.stations[self.current_station_index]
-                # Unloading
-                cargo_to_unload = next((c for c in self.cargo_load if c.cargo_type == station.cargo_type), None)
-                if cargo_to_unload:
-                    self.cargo_load.remove(cargo_to_unload)
-                    station.add_cargo(cargo_to_unload)
-                    cargo_to_unload.owner = station
-                # Loading
-                elif station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
-                    cargo_to_load = station.get_cargo()
-                    if cargo_to_load:
-                        self.add_cargo(cargo_to_load)
-
-
+            # Continue driving
             if self.wait_timer == 0:
                 self.progress = 0.0
 
                 is_loop = self.line.is_loop()
                 num_stations = len(self.line.stations)
-
-                # First, update index to mark arrival at the new station
-                self.current_station_index += self.direction
 
                 if is_loop:
                     # Then, check for loop wrap-around
@@ -95,8 +80,26 @@ class Train:
                         self.direction = -1
                     elif self.current_station_index <= 0 and self.direction == -1:
                         self.direction = 1
+
+            # While standing at station
+            if tick_counter % Constants.CARGO_DEPLOY_TIME == 0:
+                station = self.line.stations[self.current_station_index]
+                # Unloading
+                cargo_to_unload = next((c for c in self.cargo_load if c.cargo_type == station.cargo_type), None)
+                if cargo_to_unload:
+                    self.cargo_load.remove(cargo_to_unload)
+                    # not loading station when same type (cargo is at the correct place)
+                    # station.add_cargo(cargo_to_unload)
+                    del cargo_to_unload
+                # Loading
+                elif station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
+                    cargo_to_load = station.get_cargo()
+                    if cargo_to_load:
+                        self.add_cargo(cargo_to_load)
+
             return
 
+        # while driving
         if not self.line.stations or len(self.line.stations) < 2:
             return
 
@@ -123,9 +126,12 @@ class Train:
         else:
             self.progress = 1.0
 
+        # Arrived at new station
         if self.progress >= 1.0:
-            self.progress = 1.0
-            self.wait_timer = 24
+            self.progress = 0
+            # First, update index to mark arrival at the new station
+            self.current_station_index += self.direction
+            self.wait_timer = Constants.CARGO_DEPLOY_TIME * Constants.CARGO_SPOTS_PER_TROLLEY * 2
             
             # TODO: Handle cargo loading/unloading at the station
 
