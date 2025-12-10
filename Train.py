@@ -51,12 +51,28 @@ class Train:
         
         return x, y
 
-    def update(self):
+    def update(self, tick_counter):
         """
         Updates the train's progress on the line.
         """
         if self.wait_timer > 0:
             self.wait_timer -= 1
+
+            if tick_counter % 2 == 0:
+                station = self.line.stations[self.current_station_index]
+                # Unloading
+                cargo_to_unload = next((c for c in self.cargo_load if c.cargo_type == station.cargo_type), None)
+                if cargo_to_unload:
+                    self.cargo_load.remove(cargo_to_unload)
+                    station.add_cargo(cargo_to_unload)
+                    cargo_to_unload.owner = station
+                # Loading
+                elif station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
+                    cargo_to_load = station.get_cargo()
+                    if cargo_to_load:
+                        self.add_cargo(cargo_to_load)
+
+
             if self.wait_timer == 0:
                 self.progress = 0.0
 
@@ -68,17 +84,18 @@ class Train:
                     if self.direction == 1:
                         self.current_station_index = (self.current_station_index + 1) % (num_stations - 1)
                     else:
-                        self.current_station_index = (self.current_station_index - 1 + (num_stations - 1)) % (num_stations - 1)
+                        self.current_station_index = (self.current_station_index - 1 + (num_stations - 1)) % (
+                                    num_stations - 1)
 
-                else: # Linear track
+                else:  # Linear track
                     # 1. advance index to mark arrival at the new station
                     self.current_station_index += self.direction
-                    
+
                     # 2. decide whether to flip direction for the *next* trip
                     is_short_line_for_ping_pong = num_stations <= 3
 
                     if is_short_line_for_ping_pong:
-                        
+
                         if self.current_station_index >= num_stations - 1 and self.direction == 1:
                             self.direction = -1
                         elif self.current_station_index <= 0 and self.direction == -1:
@@ -136,8 +153,9 @@ class Train:
         """
         Removes cargo of the given type (call before add_cargo)
         :param cargo_type: int - type of the cargo to be deployed
-        :return: None
+        :return: Cargo
         """
         for i in range(len(self.cargo_load) - 1, -1, -1):
             if self.cargo_load[i].cargo_type == cargo_type:
-                del self.cargo_load[i]
+                return self.cargo_load.pop(i)
+        return None

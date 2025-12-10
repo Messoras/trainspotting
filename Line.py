@@ -9,13 +9,13 @@ class Line:
         self.trains: list['Train'] = []
         self.tracks: list[tuple['Station', 'Station']] = []
 
-    def tick(self):
+    def tick(self, tick_counter):
         """
         manages train movement each game tick
         :return: None
         """
         for train in self.trains:
-            train.update()
+            train.update(tick_counter)
 
     def add_station(self, station: 'Station', at_beginning: bool = False):
         """

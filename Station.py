@@ -25,3 +25,17 @@ class Station:
         distance = math.sqrt((self.position[0] - x) ** 2 + (self.position[1] - y) ** 2)
         return distance <= Constants.UI_STATION_RADIUS
 
+
+    def add_cargo(self, cargo):
+        """
+        Adds a cargo item to the station's load.
+        """
+        self.cargo_load.append(cargo)
+
+    def get_cargo(self):
+        """
+        Removes and returns the first cargo item from the station's load.
+        """
+        if self.cargo_load:
+            return self.cargo_load.pop(0)
+        return None
