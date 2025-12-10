@@ -3,8 +3,9 @@ LINE_COLOR = ["red", "blue", "yellow", "green"]
 CARGO_TYPE_NAMES = ["coal", "crystal", "gold"]
 CARGO_TYPE_TO_IMAGE = {
     0: "img/coal.png",
-    1: "img/crystal.png",
-    2: "img/gold.png"
+    1: "img/wood.png",
+    2: "img/gold.png",
+    3: "img/crystal.png"
 }
 ELIMINATION_TIMER = 1000
 CARGO_SPOTS_PER_TROLLEY = 6
@@ -12,6 +13,7 @@ CARGO_SPAWN_TICK_DELAY = 200
 STATION_SPAWN_TICK_DELAY = 1500
 MS_PER_TICK = 20
 TRAIN_SPEED = 5
+MAX_TRAINS_PER_LINE = 2
 
 CARGO_DEPLOY_TIME = 5
 
