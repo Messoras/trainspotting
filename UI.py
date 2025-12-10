@@ -18,6 +18,10 @@ class TrainspottingAppUI:
         self.game_entities = []
         self.buttons = []
         self.building_line = None
+        self.cargo_images = {}
+        for cargo_type, image_path in Constants.CARGO_TYPE_TO_IMAGE.items():
+            image = tk.PhotoImage(file=image_path)
+            self.cargo_images[cargo_type] = image.subsample(17, 17)
 
         # Main Frame
         self.main_frame = tk.Frame(master)
@@ -73,18 +77,18 @@ class TrainspottingAppUI:
                     x + Constants.UI_STATION_RADIUS, y + Constants.UI_STATION_RADIUS,
                     fill="gray", outline="black", width=1
                 )
-            for i in range(len(sta.cargo_load)):
-                crg = sta.cargo_load[i]
-                # TODO: Use image instead of label
-                lab = self.canvas.create_text(
-                    x - 30 - 8 + 8 * i - (i // 3) * 24,
-                    y - 8 + (i // 3) * 12, text=crg.cargo_type
-                )
-                self.game_entities.append(lab)
-
-            lab = self.canvas.create_text(x, y, text = sta.cargo_type)
+            lab = self.canvas.create_image(x, y, image=self.cargo_images[sta.cargo_type])
             self.game_entities.append(dot)
             self.game_entities.append(lab)
+
+            for i in range(len(sta.cargo_load)):
+                crg = sta.cargo_load[i]
+                img = self.canvas.create_image(
+                    x + Constants.UI_STATION_RADIUS + 10 + (i % 3) * 20,
+                    y - Constants.UI_STATION_RADIUS + 10 + (i // 3) * 20,
+                    image=self.cargo_images[crg.cargo_type]
+                )
+                self.game_entities.append(img)
 
 
         # Draw tracks
@@ -126,12 +130,12 @@ class TrainspottingAppUI:
                 # Draw Cargo (in trains)
                 for i in range(len(trn.cargo_load)):
                     crg = trn.cargo_load[i]
-                    # TODO: Use image instead of label
-                    lab = self.canvas.create_text(
-                        x - 8 + 8 * i - (i // 3) * 24,
-                        y - 8 + (i // 3) * 12, text=crg.cargo_type
+                    img = self.canvas.create_image(
+                        x - 8 + (i % 3) * 10,
+                        y - 8 + (i // 3) * 10,
+                        image=self.cargo_images[crg.cargo_type]
                     )
-                    self.game_entities.append(lab)
+                    self.game_entities.append(img)
 
             line_iter += 1
 
