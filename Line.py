@@ -12,6 +12,7 @@ class Line:
     def tick(self, tick_counter):
         """
         manages train movement each game tick
+        :param tick_counter: int
         :return: None
         """
         for train in self.trains:
@@ -19,7 +20,9 @@ class Line:
 
     def add_station(self, station: 'Station', at_beginning: bool = False):
         """
-         Adds a new station to the line.
+        Adds a new station to the line.
+        :param at_beginning: determines if the station is at the beginning of the line
+        :param station: Station to add
         """
         if self.stations:
             if at_beginning:
@@ -38,7 +41,10 @@ class Line:
             self.stations.append(station)
 
     def remove_station(self, station: 'Station'):
-        """Removes a station from the line."""
+        """
+        Removes a station from the line.
+        :param station: Station to remove
+        """
         if station in self.stations:
             index = self.stations.index(station)
             
@@ -75,6 +81,7 @@ class Line:
         :return: None
         """
         if self.can_delete_track(self.tracks[track]):
+            print("Should demolish track")
             del self.tracks[track]
 
     def is_valid_drag_point(self, station: 'Station') -> bool:

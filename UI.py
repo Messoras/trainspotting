@@ -201,6 +201,7 @@ class TrainspottingAppUI:
         # Disable button if track can't be removed
         if not trk[0].can_delete_track(trk[1]):
             btn.disabled = True
+            btn.text = "Can't demolish track"
 
         btn.pack(side="top", fill="x", pady=2)
         self.buttons.append(btn)
