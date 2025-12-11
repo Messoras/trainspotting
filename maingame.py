@@ -22,7 +22,7 @@ class Game:
         for i in range(Constants.MAX_LINES):
             self.lines.append(Line(i, Constants.LINE_COLOR[i]))
         self.possible_types = [0, 1, 2]
-        self.available_stations = self.possible_types.copy()
+        self.available_stations = [0, 1]
         self.money: int = 100
         self.score = 0
         self.running = True
@@ -34,7 +34,11 @@ class Game:
         self.generate_initial_stations()
 
     def generate_initial_stations(self):
-        for i in range(len(self.possible_types)):
+        """
+        Creates the first 2 stations to create a simple initial state
+        :return:
+        """
+        for i in range(len(self.possible_types) - 1):
             x = randint(0 + Constants.EDGE_MARGIN, Constants.FIELD_WIDTH - Constants.EDGE_MARGIN)
             y = randint(0 + Constants.EDGE_MARGIN, Constants.FIELD_HEIGHT - Constants.EDGE_MARGIN)
             c_type = i
@@ -58,7 +62,7 @@ class Game:
     def spawn_cargo(self):
         """
         Creates a new random cargo object (every x ticks at every station)
-        :return:
+        :return: None
         """
         for sta in self.stations:
             lst = self.available_stations.copy()
@@ -68,13 +72,26 @@ class Game:
             self.cargos.append(c)
 
     def unlist_cargo(self, cargo):
+        """
+        Disables the loss condition of given cargo when it is deployed, called by Cargo class
+        :param cargo: Cargo - element to remove from tracking list
+        :return: None
+        """
         self.cargos.remove(cargo)
 
     def game_loss(self):
+        """
+        Performs everything to end the current session in a loss
+        :return: None
+        """
         self.game_over = True
         self.selection = None
 
     def increment_score(self):
+        """
+        Callback to gain score when cargo is delivered, called by train class
+        :return: None
+        """
         self.score += 1
 
 
