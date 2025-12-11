@@ -73,16 +73,6 @@ class Line:
         if isinstance(track, int):
             return self.can_delete_track(self.tracks[track])
 
-        # for train in self.trains:
-        #     if train.progress > 0:
-        #         track_start_index = train.current_station_index
-        #         if train.direction == -1:
-        #             track_start_index -= 1
-        #
-        #         if 0 <= track_start_index < len(self.tracks):
-        #             if self.tracks[track_start_index] == track:
-        #                 return False
-
         return self.is_loop() or track == self.tracks[0] or track == self.tracks[-1]
 
     def demolish_track(self, track: int):
