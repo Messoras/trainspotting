@@ -256,14 +256,6 @@ class TrainspottingAppUI:
             command=lambda lin = trk[0], track = trk[1]: self.demolish_track(lin,track)
         )
 
-        # Disable button if track can't be removed
-        if not trk[0].can_delete_track(trk[1]):
-            btn.disabled = True
-            btn.text = "Can't demolish track"
-        else:
-            btn.pack(side="top", fill="x", pady=2)
-            self.buttons.append(btn)
-
     def demolish_track(self,lin,track_id):
         lin.demolish_track(track_id)
         self.game.selection = None
@@ -276,7 +268,7 @@ class TrainspottingAppUI:
         :return: None
         """
         if self.building_line:
-            line_id = self.building_line[0]
+            line_id = self.building_line[0]s
             start_sta = self.building_line[1]
             sel = self.game.get_clicked_station(event.x, event.y)
             if sel:
