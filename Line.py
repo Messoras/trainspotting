@@ -73,7 +73,9 @@ class Line:
             return self.can_delete_track(self.tracks[track])
         train_on_track = False
         for train in self.trains:
-            if self.tracks[train.current_station_index] == track:
+            print("Train position index: ",train.current_station_index)
+            print(self.stations)
+            if self.tracks[train.current_station_index + min(0,train.direction)] == track:
                 train_on_track = True
                 break
         return ((self.stations[0] == self.stations[-1] or track == self.tracks[0] or track == self.tracks[-1])
@@ -84,12 +86,24 @@ class Line:
         Removes the track from the line
         :param track: int - track_id of the track to remove
         :return: None
+        TODO: Error when deleting a track from the middle out of a loop, overthink tomorrow
+        -> the first element still equals the last one, the elements need to be sorted new
         """
         if self.can_delete_track(self.tracks[track]):
             # find station to remove
             for train in self.trains:
                 train.current_station_index -= 1
-            del self.stations[track]
+            if self.is_loop():
+                del self.stations[-1]
+                print("before resorting")
+                print(self.stations)
+                temp_arr = self.stations[track:len(self.stations)]
+                temp_arr.extend(self.stations[0:track])
+                self.stations = temp_arr
+                print("after resorting")
+                print(self.stations)
+            else:
+                del self.stations[track]
             del self.tracks[track]
             if len(self.tracks) == 0:
                 self.stations.clear()
@@ -109,7 +123,7 @@ class Line:
         is_start = (station == self.stations[0])
         is_end = (station == self.stations[-1])
 
-        return is_start or is_end
+        return is_start ^ is_end
 
     def can_connect_to(self, from_station: 'Station', to_station: 'Station') -> bool:
         """

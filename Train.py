@@ -73,7 +73,8 @@ class Train:
 
     def update(self, tick_counter):
         """
-        Updates the train's progress on the line.
+        Updates the train's progress on the line
+        and handles loading and unloading the train
         """
         # during stop
         if self.wait_timer > 0:
@@ -96,7 +97,8 @@ class Train:
                 # Loading
                 elif station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
                     index = next(
-                        (station.cargo_load.index(c) for c in station.cargo_load if self.moving_towards(c.cargo_type)), -1
+                        (station.cargo_load.index(c)
+                         for c in station.cargo_load if self.moving_towards(c.cargo_type)), -1
                     )
                     if index != -1:
                         cargo_to_load = station.cargo_load[index]
@@ -126,15 +128,15 @@ class Train:
             # At the end of the line, just arrive instantly
             self.progress = 1.0
 
+        is_loop = self.line.is_loop()
+        num_stations = len(self.line.stations)
+
         # Arrived at new station
         if self.progress >= 1.0:
             self.progress = 0.0
             # First, update index to mark arrival at the new station
             self.current_station_index += self.direction
             self.wait_timer = Constants.CARGO_DEPLOY_TIME * Constants.CARGO_SPOTS_PER_TROLLEY * 2
-
-            is_loop = self.line.is_loop()
-            num_stations = len(self.line.stations)
 
             if not is_loop:
                 # Then, check for direction flip
@@ -144,8 +146,10 @@ class Train:
                     self.direction = 1
             else:
                 # It's a loop, wrap around
-                if self.current_station_index >= num_stations - 1:
+                if self.current_station_index >= num_stations - 1 and self.direction > 0:
                     self.current_station_index = 0
+                elif self.current_station_index <= -1 and is_loop and self.direction < 0:
+                    self.current_station_index = len(self.line.stations) - 1
 
     def add_cargo(self, cargo):
         """
