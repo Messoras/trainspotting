@@ -179,8 +179,8 @@ class TrainspottingAppUI:
                 # Draw Cargo (in trains)
                 for i in range(len(trn.cargo_load)):
                     crg = trn.cargo_load[i]
-                    crg_x = x + Constants.UI_STATION_RADIUS + 20 + (i % 3) * 20
-                    crg_y = y - Constants.UI_STATION_RADIUS + (i // 3) * 20
+                    crg_x = x + 24 + (i % 3) * 20
+                    crg_y = y - 8 + (i // 3) * 20
                     if crg.elimination_timer < 500 and (self.game.tick_counter // Constants.FLICKER_DURATION) % 2 == 0:
                         x1 = crg_x - self.cargo_images_small[crg.cargo_type].width() // 2 - 3
                         y1 = crg_y - self.cargo_images_small[crg.cargo_type].height() // 2 - 3
@@ -193,8 +193,8 @@ class TrainspottingAppUI:
                         self.game_entities.append(warn)
                     crg = trn.cargo_load[i]
                     img = self.canvas.create_image(
-                        x + 24 + (i % 3) * 20,
-                        y - 8 + (i // 3) * 20,
+                        crg_x,
+                        crg_y,
                         image=self.cargo_images_small[crg.cargo_type]
                     )
                     self.game_entities.append(img)
