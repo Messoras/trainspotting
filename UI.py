@@ -274,7 +274,7 @@ class TrainspottingAppUI:
         btn = tk.Button(
             self.ui_frame,
             text="Demolish track",
-            command=lambda lin = trk[0], track = trk[1]: lin.demolish_track(track)
+            command=lambda lin = trk[0], track = trk[1]: self.demolish_track(lin,track)
         )
 
         # Disable button if track can't be removed
@@ -284,6 +284,11 @@ class TrainspottingAppUI:
         else:
             btn.pack(side="top", fill="x", pady=2)
             self.buttons.append(btn)
+
+    def demolish_track(self,lin,track_id):
+        lin.demolish_track(track_id)
+        self.game.selection = None
+        self.selection_changed()
 
     def handle_left_click(self, event):
         """
