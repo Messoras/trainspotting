@@ -22,6 +22,7 @@ class Game:
         for i in range(Constants.MAX_LINES):
             self.lines.append(Line(i, Constants.LINE_COLOR[i]))
         self.possible_types = [0, 1, 2]
+        self.available_stations = self.possible_types.copy()
         self.money: int = 100
         self.score = 0
         self.running = True
@@ -47,9 +48,11 @@ class Game:
         """
         x_pos = randint(0 + Constants.EDGE_MARGIN, Constants.FIELD_WIDTH - Constants.EDGE_MARGIN)
         y_pos = randint(0 + Constants.EDGE_MARGIN, Constants.FIELD_HEIGHT - Constants.EDGE_MARGIN)
-        c_type = randint(0, self.possible_types[-1])
+        c_type = choice(self.possible_types)
 
         self.stations.append(Station(x_pos, y_pos, c_type))
+        if not c_type in self.available_stations:
+            self.available_stations.append(c_type)
 
 
     def spawn_cargo(self):
@@ -58,7 +61,7 @@ class Game:
         :return:
         """
         for sta in self.stations:
-            lst = self.possible_types.copy()
+            lst = self.available_stations.copy()
             lst.remove(sta.cargo_type)
             c = Cargo(choice(lst),sta,self.game_loss,self.unlist_cargo)
             sta.cargo_load.append(c)
@@ -127,6 +130,10 @@ class Game:
             self.spawn_cargo()
         if self.tick_counter % (1000 // Constants.MS_PER_TICK) == 0:
             pass # 1 second
+
+        if self.tick_counter == 10000:
+            self.possible_types.append(3)
+
         self.tick_counter += 1
 
 
