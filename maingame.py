@@ -8,6 +8,7 @@ from Line import Line
 from Cargo import Cargo
 from Station import Station
 from Train import Train
+from scoreboard import Scoreboard
 
 class Game:
     def __init__(self):
@@ -26,12 +27,16 @@ class Game:
         self.money: int = 100
         self.score = 0
         self.running = True
-        self.tick_counter = 1201
+        self.tick_counter = 1001
         self.last_time = time.perf_counter()
         self.selection = None
         self.game_over = False
+        self.scoreboard = Scoreboard()
 
         self.generate_initial_stations()
+
+    def add_player_score(self, name):
+        self.scoreboard.add_score(name, self.score)
 
     def generate_initial_stations(self):
         """

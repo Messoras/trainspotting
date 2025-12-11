@@ -19,6 +19,7 @@ class TrainspottingAppUI:
         self.game_entities = []
         self.buttons = []
         self.building_line = None
+        self.game_over_screen_shown = False
         self.cargo_images = {}
         self.cargo_images_small = {}
         for cargo_type, image_path in Constants.CARGO_TYPE_TO_IMAGE.items():
@@ -62,30 +63,8 @@ class TrainspottingAppUI:
         :return: None
         """
         if self.game.game_over:
-            self.selection_changed() # clear UI
-            # Draw LOSS Screen
-            loss_cube = self.canvas.create_rectangle(
-                0, 0,
-                Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN, Constants.UI_HEIGHT,
-                fill = "black",
-                stipple = "gray75"
-            )
-            self.game_entities.append(loss_cube)
-            loss_text = self.canvas.create_text(
-                (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2,
-                text = "You lost!",
-                anchor = "n",
-                font = ("Arial", 36, "bold"),
-                fill = "red"
-            )
-            self.game_entities.append(loss_text)
-            info_text = self.canvas.create_text(
-                (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 100,
-                text = f"You didn't deliver the cargo in time. \nYour score: {self.game.score}",
-                anchor = "n",
-                font = ("Arial", 16),
-                fill = "white"
-            )
+            if not self.game_over_screen_shown:
+                self.show_game_over_screen()
             return
 
         # Clear previous frame
@@ -363,6 +342,114 @@ class TrainspottingAppUI:
         self.game.running = False
 
         self.master.destroy()
+
+    def show_game_over_screen(self):
+        self.game_over_screen_shown = True
+        self.selection_changed()  # clear UI
+        for item in self.game_entities:
+            self.canvas.delete(item)
+        self.game_entities.clear()
+
+        # Draw LOSS Screen
+        loss_cube = self.canvas.create_rectangle(
+            0, 0,
+            Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN, Constants.UI_HEIGHT,
+            fill="black",
+            stipple="gray75"
+        )
+        self.game_entities.append(loss_cube)
+        loss_text = self.canvas.create_text(
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 - 100,
+            text="You lost!",
+            anchor="n",
+            font=("Arial", 36, "bold"),
+            fill="red"
+        )
+        self.game_entities.append(loss_text)
+        info_text = self.canvas.create_text(
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 - 20,
+            text=f"You didn't deliver the cargo in time. \nYour score: {self.game.score}",
+            anchor="n",
+            font=("Arial", 16),
+            fill="white"
+        )
+        self.game_entities.append(info_text)
+
+        # Name Entry
+        name_label = tk.Label(self.canvas, text="Enter your name:", font=("Arial", 12), bg="black", fg="white")
+        name_label_window = self.canvas.create_window(
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 50,
+            anchor="s", window=name_label
+        )
+        self.game_entities.append(name_label_window)
+
+        name_entry = tk.Entry(self.canvas, font=("Arial", 12))
+        name_entry_window = self.canvas.create_window(
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 50,
+            anchor="n", window=name_entry
+        )
+        self.game_entities.append(name_entry_window)
+
+        submit_button = tk.Button(
+            self.canvas, text="Submit", font=("Arial", 12),
+            command=lambda: self.submit_score(name_entry.get())
+        )
+        submit_button_window = self.canvas.create_window(
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 90,
+            anchor="n", window=submit_button
+        )
+        self.game_entities.append(submit_button_window)
+
+    def submit_score(self, name):
+        if name:
+            self.game.add_player_score(name)
+        self.show_scoreboard()
+
+    def show_scoreboard(self):
+        for item in self.game_entities:
+            self.canvas.delete(item)
+        self.game_entities.clear()
+
+        # Draw Scoreboard Screen
+        bg = self.canvas.create_rectangle(
+            0, 0,
+            Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN, Constants.UI_HEIGHT,
+            fill="black"
+        )
+        self.game_entities.append(bg)
+
+        title_text = self.canvas.create_text(
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, 50,
+            text="Scoreboard",
+            anchor="n",
+            font=("Arial", 36, "bold"),
+            fill="white"
+        )
+        self.game_entities.append(title_text)
+
+        scores = self.game.scoreboard.get_scores()
+        y_pos = 150
+        for i, entry in enumerate(scores):
+            score_text = f"{i + 1}. {entry['name']}: {entry['score']}"
+            self.canvas.create_text(
+                (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, y_pos,
+                text=score_text,
+                anchor="n",
+                font=("Arial", 16),
+                fill="white"
+            )
+            y_pos += 30
+
+        close_button = tk.Button(
+            self.canvas, text="Close", font=("Arial", 12),
+            command=self.on_close
+        )
+        close_button_window = self.canvas.create_window(
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, y_pos + 50,
+            anchor="n", window=close_button
+        )
+        self.game_entities.append(close_button_window)
+
 
 
 def create_ui(game):

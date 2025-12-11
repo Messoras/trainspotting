@@ -129,22 +129,15 @@ class Line:
                 try:
                     new_index = self.stations.index(old_station)
                     train.current_station_index = new_index
-                    train.progress = 0.0  # reset progress to be safe
+                    # train.progress = 0.0  # reset progress to be safe
                     if not self.is_loop() and len(self.stations) > 1:
                         if train.current_station_index == 0:
                             train.direction = 1
                         elif train.current_station_index == len(self.stations) - 1:
                             train.direction = -1
                 except ValueError:
-                    # The station the train was at has been removed.
-                    if self.stations:
-                        # Relocate train to the start of the new line segment
-                        train.current_station_index = 0
-                        train.progress = 0.0
-                        train.direction = 1
-                    else:
-                        # Line has no stations left, mark train for removal
-                        trains_to_remove.append(train)
+                    # The station the train was at has been removed, so remove the train
+                    trains_to_remove.append(train)
 
             # Safely remove trains
             for train in trains_to_remove:
