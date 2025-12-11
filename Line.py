@@ -91,20 +91,29 @@ class Line:
         """
         if self.can_delete_track(self.tracks[track]):
             # find station to remove
+            del self.tracks[track]
             for train in self.trains:
-                train.current_station_index -= 1
+                # change station index of trains
+                print("Train direction: ",train.direction)
+                print("Train position index: ",train.current_station_index)
+                if train.current_station_index >= track:
+                    train.current_station_index = max(0,train.current_station_index - 1)
             if self.is_loop():
-                del self.stations[-1]
-                print("before resorting")
-                print(self.stations)
-                temp_arr = self.stations[track:len(self.stations)]
-                temp_arr.extend(self.stations[0:track])
+                # if track == 0:
+                #     del self.stations[0]
+                # else:
+                #     del self.stations[-1]
+                #print("before resorting")
+                #print(self.stations)
+                #temp_arr = self.stations[track:len(self.stations)]
+                #temp_arr.extend(self.stations[0:track])
+                temp_arr = [t[0] for t in self.tracks]
+                temp_arr.append(self.tracks[-1][1])
                 self.stations = temp_arr
-                print("after resorting")
-                print(self.stations)
+                #print("after resorting")
+                #print(self.stations)
             else:
                 del self.stations[track]
-            del self.tracks[track]
             if len(self.tracks) == 0:
                 self.stations.clear()
 

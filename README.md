@@ -39,5 +39,4 @@ Some functions are only called once after a set amount of ticks:
 - Demolishing track pieces
 - Graphics
 - Bug fixing:
-  * Clicking on lines 2 times causes crash
-  * building lines and clicking something else than a station can cause weird bugs
+  * Removing a line from a closed loop causes errors or crashes
