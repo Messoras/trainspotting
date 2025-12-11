@@ -268,7 +268,7 @@ class TrainspottingAppUI:
         :return: None
         """
         if self.building_line:
-            line_id = self.building_line[0]s
+            line_id = self.building_line[0]
             start_sta = self.building_line[1]
             sel = self.game.get_clicked_station(event.x, event.y)
             if sel:
