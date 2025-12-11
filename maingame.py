@@ -26,7 +26,7 @@ class Game:
         self.money: int = 100
         self.score = 0
         self.running = True
-        self.tick_counter = 1201
+        self.tick_counter = 1001
         self.last_time = time.perf_counter()
         self.selection = None
         self.game_over = False
