@@ -378,14 +378,14 @@ class TrainspottingAppUI:
         # Name Entry
         name_label = tk.Label(self.canvas, text="Enter your name:", font=("Arial", 12), bg="black", fg="white")
         name_label_window = self.canvas.create_window(
-            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 50,
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 100,
             anchor="s", window=name_label
         )
         self.game_entities.append(name_label_window)
 
         name_entry = tk.Entry(self.canvas, font=("Arial", 12))
         name_entry_window = self.canvas.create_window(
-            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 50,
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 100,
             anchor="n", window=name_entry
         )
         self.game_entities.append(name_entry_window)
@@ -395,7 +395,7 @@ class TrainspottingAppUI:
             command=lambda: self.submit_score(name_entry.get())
         )
         submit_button_window = self.canvas.create_window(
-            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 90,
+            (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 + 130,
             anchor="n", window=submit_button
         )
         self.game_entities.append(submit_button_window)
