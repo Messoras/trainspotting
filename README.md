@@ -1,7 +1,7 @@
 # trainspotting
 Train Management App in Python
 This project simulates the cargo transportation between train stations. The aim of the game is to transport as much cargo as possible while using minimal resources.
-To start the program, run maingame.py.
+To start the program, run the maingame.py script.
 
 ### Structure
 
