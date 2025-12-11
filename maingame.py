@@ -1,14 +1,17 @@
 import time
 import asyncio
 from random import randint, choice
+import winsound
 
 import Constants
+from Constants import CHOO_CHOO_SOUND
 import UI
 from Line import Line
 from Cargo import Cargo
 from Station import Station
 from Train import Train
 from scoreboard import Scoreboard
+
 
 class Game:
     def __init__(self):
@@ -131,6 +134,7 @@ class Game:
         """
         # For simplicity, only allow one train per line for now
         if len(line.trains) <= Constants.MAX_TRAINS_PER_LINE: # and check available trains or buy price
+            winsound.PlaySound(CHOO_CHOO_SOUND, winsound.SND_ASYNC)
             train = Train(line, station, self.increment_score)
             train.wait_timer = Constants.CARGO_DEPLOY_TIME * Constants.CARGO_SPOTS_PER_TROLLEY
             line.trains.append(train)
