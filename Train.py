@@ -94,6 +94,7 @@ class Train:
             if tick_counter % Constants.CARGO_DEPLOY_TIME == 0:
                 station = self.line.stations[self.current_station_index]
                 # Unloading
+                # TODO: Unload if station has another line where this cargo type can be unloaded earlier
                 cargo_to_unload = next(
                     (c for c in self.cargo_load if c.cargo_type == station.cargo_type
                      ), None)
@@ -105,6 +106,7 @@ class Train:
                     #del cargo_to_unload
                     self.trigger_score()
                 # Loading
+                # TODO: Load if connected to a line that can serve type if no other line has closer connection
                 elif station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
                     index = next(
                         (station.cargo_load.index(c)
