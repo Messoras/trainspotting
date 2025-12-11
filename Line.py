@@ -67,7 +67,6 @@ class Line:
         Check if Track can be deleted.
         :param track: tuple['Station', 'Station'] or int - Track to check
         """
-        print(track)
         if not self.tracks:
             return False
         if isinstance(track, int):
