@@ -35,8 +35,6 @@ Some functions are only called once after a set amount of ticks:
 ### TODO:
 
 - Increasing the amount of trolleys per train
-- Disabling track building when line is a circle
-- Demolishing track pieces
 - Graphics
 - Bug fixing:
   * Removing a line from a closed loop causes errors or crashes
