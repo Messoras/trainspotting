@@ -70,11 +70,11 @@ class Game:
     def spawn_cargo(self):
         """
         Creates a new random cargo object (every x ticks at every station)
+        increases chance for spawning cargo type for each station with the same type
         :return: None
         """
         for sta in self.stations:
-            lst = self.available_stations.copy()
-            lst.remove(sta.cargo_type)
+            lst = [c.cargo_type for c in self.stations if c.cargo_type != sta.cargo_type]
             c = Cargo(choice(lst),sta,self.game_loss,self.unlist_cargo)
             sta.cargo_load.append(c)
             self.cargos.append(c)
