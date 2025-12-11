@@ -80,7 +80,10 @@ class Train:
         :return: Bool
         """
         if self.line.stations[0] == self.line.stations[-1]:
-            return True
+            for crg in self.line.stations:
+                if cargo_type == crg.cargo_type:
+                    return True
+            return False
         else:
             sta_lst = []
             if self.direction == 1:

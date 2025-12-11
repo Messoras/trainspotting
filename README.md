@@ -37,4 +37,4 @@ Some functions are only called once after a set amount of ticks:
 - Increasing the amount of trolleys per train
 - Graphics
 - Bug fixing:
-  * Why are you carrying crystals when not attached to a crystal station?
+  * all fine for now
