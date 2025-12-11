@@ -99,19 +99,9 @@ class Line:
                 if train.current_station_index >= track:
                     train.current_station_index = max(0,train.current_station_index - 1)
             if self.is_loop():
-                # if track == 0:
-                #     del self.stations[0]
-                # else:
-                #     del self.stations[-1]
-                #print("before resorting")
-                #print(self.stations)
-                #temp_arr = self.stations[track:len(self.stations)]
-                #temp_arr.extend(self.stations[0:track])
                 temp_arr = [t[0] for t in self.tracks]
-                temp_arr.append(self.tracks[-1][1])
+                temp_arr.append(self.tracks[-1][1]) # TODO: sometimes need to insert first instead, how to check that?
                 self.stations = temp_arr
-                #print("after resorting")
-                #print(self.stations)
             else:
                 del self.stations[track]
             if len(self.tracks) == 0:
