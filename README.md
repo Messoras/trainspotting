@@ -30,14 +30,40 @@ Some functions are only called after a set amount of ticks (repeatedly):
 - Spawning new stations - medium delay
 - increasing the amount of different cargo types - long delay
 
-Some functions are only called once after a set amount of ticks:
+Some functions are only called once after a set amount of ticks (or after reaching a given score):
 
 - Initialization: Generating the starting field and spawning some stations with set types
 - (unlocking new updates / buy options)
 
-### TODO:
+A victory condition is not apparent. You play as long as you can and enjoy and collect score.
+The score incrementation is handed to train elements as callback upon creation by the main game.
+This can be triggered by the train when it deploys cargo.  
+A losing condition is handed to all cargo elements as callback upon creation by the main game.
+This can be triggered by the Cargo element as soon as it reaches a certain age without being delivered.
+
+### UI
+
+The UI is responsible for displaying the game state and interacting with its elements.
+It includes methods to display the following game elements (using tkinter):
+
+- Stations: as circle with icon for the cargo type
+- Trains: as image
+- Lines/Tracks: as colored line elements
+- Cargo: as image (attached to trains and/or stations)
+- Highscore: as string
+- Info about activity (building): as string (probably better as line)
+
+The following interactions are provided by the UI by handling clicks on the corresponding panel:
+
+- Opening station UI: (game panel) - click on a station element
+- Opening track UI: (game panel) - click on a track element
+- Closing UI: (game panel) - click on open space
+- Building new track: (station UI panel) - line buttons
+- Demolishing track: (line UI panel) - demolish button
+
+### Outlooks:
 
 - Increasing the amount of trolleys per train
-- Graphics
-- Bug fixing:
-  * all fine for now
+- Graphics enhancement (train rotation, improved UI, etc.)
+- Semi-random station spawning (no overlaying stations...)
+- Implementing money and building/buying costs
