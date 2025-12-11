@@ -255,8 +255,6 @@ class TrainspottingAppUI:
             text="Demolish track",
             command=lambda lin = trk[0], track = trk[1]: self.demolish_track(lin,track)
         )
-        btn.pack(side="top", fill="x", pady=2)
-        self.buttons.append(btn)
 
         if trk[0].can_delete_track(trk[1]):
             btn.pack(side="top", fill="x", pady=2)

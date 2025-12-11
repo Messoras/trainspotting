@@ -1,3 +1,5 @@
+from numba.cuda.simulator.kernelapi import andlock
+
 from Station import *
 from Train import *
 
@@ -62,17 +64,28 @@ class Line:
 
             self.stations.remove(station)
 
-    def can_delete_track(self, track) -> bool:
+    def can_delete_track(self, track: int) -> bool:
         """
         Check if Track can be deleted.
-        :param track: tuple['Station', 'Station'] or int - Track to check
+        :param track: int - Track to check
         """
         if not self.tracks:
             return False
-        if isinstance(track, int):
-            return self.can_delete_track(self.tracks[track])
+        #if isinstance(track, int):
+        #    return self.can_delete_track(self.tracks[track])
 
-        return self.is_loop() or track == self.tracks[0] or track == self.tracks[-1]
+        # Check for trains on this track
+        train_on_track = False
+        for trn in self.trains:
+            if trn.current_station_index == track and trn.direction > 0:
+                train_on_track = True
+                break
+            if trn.current_station_index - 1 == track and trn.direction < 0:
+                train_on_track = True
+                break
+
+        # Check if line is a loop or track is element at the end of line
+        return (self.is_loop() or track == 0 or track == len(self.tracks) - 1) and not train_on_track
 
     def demolish_track(self, track: int):
         """
@@ -80,7 +93,7 @@ class Line:
         :param track: int - track_id of the track to remove
         :return: None
         """
-        if self.can_delete_track(self.tracks[track]):
+        if self.can_delete_track(track):
             # Store train's current station object to find it later
             train_locations = {}
             if self.stations:  # Ensure stations exist before accessing them
