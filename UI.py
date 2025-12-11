@@ -258,6 +258,10 @@ class TrainspottingAppUI:
         btn.pack(side="top", fill="x", pady=2)
         self.buttons.append(btn)
 
+        if trk[0].can_delete_track(trk[1]):
+            btn.pack(side="top", fill="x", pady=2)
+            self.buttons.append(btn)
+
     def demolish_track(self,lin,track_id):
         lin.demolish_track(track_id)
         self.game.selection = None

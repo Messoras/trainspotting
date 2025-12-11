@@ -67,23 +67,21 @@ class Line:
         Check if Track can be deleted.
         :param track: tuple['Station', 'Station'] or int - Track to check
         """
+        print(track)
         if not self.tracks:
             return False
         if isinstance(track, int):
-            if 0 <= track < len(self.tracks):
-                track = self.tracks[track]
-            else:
-                return False
+            return self.can_delete_track(self.tracks[track])
 
-        for train in self.trains:
-            if train.progress > 0:
-                track_start_index = train.current_station_index
-                if train.direction == -1:
-                    track_start_index -= 1
-                
-                if 0 <= track_start_index < len(self.tracks):
-                    if self.tracks[track_start_index] == track:
-                        return False
+        # for train in self.trains:
+        #     if train.progress > 0:
+        #         track_start_index = train.current_station_index
+        #         if train.direction == -1:
+        #             track_start_index -= 1
+        #
+        #         if 0 <= track_start_index < len(self.tracks):
+        #             if self.tracks[track_start_index] == track:
+        #                 return False
 
         return self.is_loop() or track == self.tracks[0] or track == self.tracks[-1]
 
@@ -138,6 +136,10 @@ class Line:
                 except ValueError:
                     # The station the train was at has been removed, so remove the train
                     trains_to_remove.append(train)
+
+            # Remove last station if only 1 remains
+            if len(self.stations) == 1:
+                self.stations.clear()
 
             # Safely remove trains
             for train in trains_to_remove:
