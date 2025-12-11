@@ -132,6 +132,7 @@ class Game:
         # For simplicity, only allow one train per line for now
         if len(line.trains) <= Constants.MAX_TRAINS_PER_LINE: # and check available trains or buy price
             train = Train(line, station, self.increment_score)
+            train.wait_timer = Constants.CARGO_DEPLOY_TIME * Constants.CARGO_SPOTS_PER_TROLLEY
             line.trains.append(train)
 
 
