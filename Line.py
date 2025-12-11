@@ -15,7 +15,7 @@ class Line:
         :param tick_counter: int
         :return: None
         """
-        for train in self.trains:
+        for train in self.trains[:]: # Iterate over a copy
             train.update(tick_counter)
 
     def add_station(self, station: 'Station', at_beginning: bool = False):
@@ -69,43 +69,91 @@ class Line:
         """
         if not self.tracks:
             return False
-        if type(track) == int:
-            return self.can_delete_track(self.tracks[track])
-        train_on_track = False
+        if isinstance(track, int):
+            if 0 <= track < len(self.tracks):
+                track = self.tracks[track]
+            else:
+                return False
+
         for train in self.trains:
-            print("Train position index: ",train.current_station_index)
-            print(self.stations)
-            if self.tracks[train.current_station_index + min(0,train.direction)] == track:
-                train_on_track = True
-                break
-        return ((self.stations[0] == self.stations[-1] or track == self.tracks[0] or track == self.tracks[-1])
-                and not train_on_track)
+            if train.progress > 0:
+                track_start_index = train.current_station_index
+                if train.direction == -1:
+                    track_start_index -= 1
+                
+                if 0 <= track_start_index < len(self.tracks):
+                    if self.tracks[track_start_index] == track:
+                        return False
+
+        return self.is_loop() or track == self.tracks[0] or track == self.tracks[-1]
 
     def demolish_track(self, track: int):
         """
         Removes the track from the line
         :param track: int - track_id of the track to remove
         :return: None
-        TODO: Error when deleting a track from the middle out of a loop, overthink tomorrow
-        -> the first element still equals the last one, the elements need to be sorted new
         """
         if self.can_delete_track(self.tracks[track]):
-            # find station to remove
-            del self.tracks[track]
-            for train in self.trains:
-                # change station index of trains
-                print("Train direction: ",train.direction)
-                print("Train position index: ",train.current_station_index)
-                if train.current_station_index >= track:
-                    train.current_station_index = max(0,train.current_station_index - 1)
-            if self.is_loop():
-                temp_arr = [t[0] for t in self.tracks]
-                temp_arr.append(self.tracks[-1][1]) # TODO: sometimes need to insert first instead, how to check that?
-                self.stations = temp_arr
+            # Store train's current station object to find it later
+            train_locations = {}
+            if self.stations:  # Ensure stations exist before accessing them
+                for train in self.trains:
+                    if train.current_station_index < len(self.stations):
+                        train_locations[train] = self.stations[train.current_station_index]
+                    else:  # Failsafe for inconsistent state
+                        train_locations[train] = self.stations[0]
+
+            was_loop = self.is_loop()
+
+            if was_loop:
+                # It's a loop, so we're opening it into a simple line.
+                new_stations = self.stations[track + 1:-1] + self.stations[:track + 1]
+                self.stations = new_stations
             else:
-                del self.stations[track]
-            if len(self.tracks) == 0:
-                self.stations.clear()
+                # It's a simple line, we can only delete from the ends.
+                if track == 0:
+                    # remove first station
+                    del self.stations[0]
+                else:
+                    # remove last station
+                    del self.stations[-1]
+
+            # Rebuild tracks based on the new station list
+            self.tracks.clear()
+            if len(self.stations) > 1:
+                for i in range(len(self.stations) - 1):
+                    self.tracks.append((self.stations[i], self.stations[i + 1]))
+
+            trains_to_remove = []
+            for train, old_station in train_locations.items():
+                try:
+                    new_index = self.stations.index(old_station)
+                    train.current_station_index = new_index
+                    train.progress = 0.0  # reset progress to be safe
+                    if not self.is_loop() and len(self.stations) > 1:
+                        if train.current_station_index == 0:
+                            train.direction = 1
+                        elif train.current_station_index == len(self.stations) - 1:
+                            train.direction = -1
+                except ValueError:
+                    # The station the train was at has been removed.
+                    if self.stations:
+                        # Relocate train to the start of the new line segment
+                        train.current_station_index = 0
+                        train.progress = 0.0
+                        train.direction = 1
+                    else:
+                        # Line has no stations left, mark train for removal
+                        trains_to_remove.append(train)
+
+            # Safely remove trains
+            for train in trains_to_remove:
+                if train in self.trains:
+                    self.trains.remove(train)
+
+            # If all stations are gone, clear all trains
+            if not self.stations:
+                self.trains.clear()
 
     def is_valid_drag_point(self, station: 'Station') -> bool:
         """

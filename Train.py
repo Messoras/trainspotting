@@ -17,8 +17,30 @@ class Train:
             self.current_station_index = self.line.stations.index(station)
         except ValueError:
             self.current_station_index = 0  # Default to 0 if station not found
+
+        # Set initial direction based on position for non-looping lines
+        if not self.line.is_loop() and len(self.line.stations) > 1 and self.current_station_index == len(self.line.stations) - 1:
+            self.direction = -1
+        else:
+            self.direction = 1
         self.progress = 0.0 
         self.wait_timer = 0
+
+        # Immediately load cargo from spawn station
+        while station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
+            # Find the index of the first suitable cargo
+            index = next(
+                (station.cargo_load.index(c)
+                 for c in station.cargo_load if self.moving_towards(c.cargo_type)), -1
+            )
+            
+            # If a suitable cargo is found, load it. Otherwise, break the loop.
+            if index != -1:
+                cargo_to_load = station.cargo_load[index]
+                self.add_cargo(cargo_to_load)
+                del station.cargo_load[index]
+            else:
+                break
     @property
     def position(self):
         """
