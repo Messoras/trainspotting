@@ -26,6 +26,11 @@ class TrainspottingAppUI:
             self.cargo_images[cargo_type] = image.subsample(24)
             self.cargo_images_small[cargo_type] = image.subsample(32)
         self.train_image = tk.PhotoImage(file="img/chocho.png").subsample(6)
+        self.train_images = {
+            "red": tk.PhotoImage(file="img/chocho_red.png").subsample(6),
+            "blue": tk.PhotoImage(file="img/chocho_blue.png").subsample(6),
+            "yellow": tk.PhotoImage(file="img/chocho_yellow.png").subsample(6),
+        }
 
         # Main Frame
         self.main_frame = tk.Frame(master)
@@ -173,7 +178,8 @@ class TrainspottingAppUI:
             # Draw trains
             for trn in line.trains:
                 x, y = trn.position
-                img = self.canvas.create_image(x, y, image=self.train_image)
+                train_img = self.train_images.get(line.color, self.train_image)
+                img = self.canvas.create_image(x, y, image=train_img)
                 self.game_entities.append(img)
 
                 # Draw Cargo (in trains)
