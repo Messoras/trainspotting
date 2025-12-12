@@ -2,6 +2,10 @@ from Station import *
 from Train import *
 
 class Line:
+    """
+    Represents a line element, identifiable in the main game by its color code,
+    including a collection of stations and tracks, as well as trains
+    """
     def __init__(self, line_id: int, line_color: str):
         self.id = line_id
         self.stations: list['Station'] = [] 

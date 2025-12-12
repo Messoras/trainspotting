@@ -5,6 +5,9 @@ from Station import Station
 
 
 class TrainspottingAppUI:
+    """
+    UI class to manage display of and interaction with the main game
+    """
     def __init__(self, master, game):
         """
         Constructor

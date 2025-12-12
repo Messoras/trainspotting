@@ -2,6 +2,10 @@ import Constants
 import math
 
 class Train:
+    """
+    Represents a train object that can transport cargo between stations using tracks
+    Always has to be attached to a line element
+    """
     def __init__(self, line, station, score_callback):
         """
         Constructor

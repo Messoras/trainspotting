@@ -1,3 +1,8 @@
+"""
+Collection of constants used by the main game
+Separately imported for clarity
+"""
+
 MAX_LINES = 3
 LINE_COLOR = ["red", "blue", "yellow", "green"]
 CARGO_TYPE_NAMES = ["coal", "wood", "gold", "crystal"]

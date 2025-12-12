@@ -3,6 +3,9 @@ import json
 SCOREBOARD_FILE = "scores.json"
 
 class Scoreboard:
+    """
+    Handles the user scores to be displayed after each game
+    """
     def __init__(self):
         self.scores = []
         self.load_scores()

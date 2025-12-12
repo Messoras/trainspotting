@@ -14,6 +14,9 @@ from scoreboard import Scoreboard
 
 
 class Game:
+    """
+    Main Game handling all game objects and managing their ticks. Progressed by game loop
+    """
     def __init__(self):
         """
         Sets up everything needed to start the game logic

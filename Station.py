@@ -2,6 +2,10 @@ import Constants
 import math
 
 class Station:
+    """
+    Represents a station element that can be attached to a line
+    Trains can load or unload cargo here to progress the game.
+    """
     def __init__(self, x_pos, y_pos, cargo_type):
         """
         Constructor

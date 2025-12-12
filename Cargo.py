@@ -1,6 +1,10 @@
 import Constants
 
 class Cargo:
+    """
+    Represents a cargo element which will be created by the main game at a random station
+    Cam either be attached to a station or train and delivers a losing condition when it times out
+    """
     def __init__(self, cargo_type, start_station, loss_callback, disable_callback):
         """
         Constructor
