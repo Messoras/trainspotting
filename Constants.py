@@ -28,10 +28,10 @@ COST_PER_LINE = 0
 COST_PER_METER = 0.5
 STARTING_CAPITAL = 1000
 CARGO_VALUE = {
-    0: 10,
-    1: 20,
-    2: 50,
-    3: 100
+    0: 5,
+    1: 5,
+    2: 10,
+    3: 50
 }
 
 FIELD_WIDTH = 1100
