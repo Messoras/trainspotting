@@ -120,7 +120,7 @@ class Train:
                         cargo_to_unload.unlist()
                     else:
                         station.add_cargo(cargo_to_unload)
-                    self.trigger_score()
+                    self.trigger_score(cargo_to_unload.cargo_type)
                 # Loading
                 elif station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
                     index = next(

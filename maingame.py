@@ -30,7 +30,7 @@ class Game:
             self.lines.append(Line(i, Constants.LINE_COLOR[i]))
         self.possible_types = [0, 1, 2]
         self.available_stations = [0, 1]
-        self.money: int = 100
+        self.money: int = Constants.STARTING_CAPITAL
         self.score = 0
         self.running = True
         self.tick_counter = 1001
@@ -98,12 +98,13 @@ class Game:
         self.game_over = True
         self.selection = None
 
-    def increment_score(self):
+    def cargo_delivered(self, cargo_type):
         """
         Callback to gain score when cargo is delivered, called by train class
         :return: None
         """
         self.score += 1
+        self.money += Constants.CARGO_VALUE.get(cargo_type, 0)
 
 
     def get_clicked_station(self, x, y):
@@ -136,12 +137,25 @@ class Game:
         Creates a new train on the given line if there are none.
         """
         # For simplicity, only allow one train per line for now
-        if len(line.trains) <= Constants.MAX_TRAINS_PER_LINE: # and check available trains or buy price
+        if len(line.trains) <= Constants.MAX_TRAINS_PER_LINE and self.money >= Constants.COST_PER_TRAIN:
+            self.money -= Constants.COST_PER_TRAIN
             winsound.PlaySound(CHOO_CHOO_SOUND, winsound.SND_ASYNC)
-            train = Train(line, station, self.increment_score)
+            train = Train(line, station, self.cargo_delivered)
             train.wait_timer = Constants.CARGO_DEPLOY_TIME * Constants.CARGO_SPOTS_PER_TROLLEY
             line.trains.append(train)
-
+    
+    def buy_line(self, line, start_station, end_station):
+        line_cost = Constants.COST_PER_LINE
+        line_cost += start_station.get_distance_to(end_station) * Constants.COST_PER_METER
+        if self.money >= line_cost:
+            self.money -= line_cost
+            if len(line.stations) == 0:
+                line.add_station(start_station)
+            line.add_station(
+                end_station,
+                len(line.tracks) == 0 or
+                start_station == line.stations[0]
+            )
 
     def tick(self):
         """

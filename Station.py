@@ -44,6 +44,14 @@ class Station:
             return self.cargo_load.pop(0)
         return None
 
+    def get_distance_to(self, other_station):
+        """
+        Calculates the distance to another station.
+        :param other_station: Station - the other station
+        :return: float - the distance between the two stations
+        """
+        return math.sqrt((self.position[0] - other_station.position[0]) ** 2 + (self.position[1] - other_station.position[1]) ** 2)
+
     def is_connected_to_cargo_type(self, cargo_type):
         """
         Determines if a line is connected to this station that can deploy the given cargo type
