@@ -4,6 +4,8 @@
 This project simulates the cargo transportation between train stations. The aim of the game is to transport as much cargo as possible while using minimal resources.
 To start the program, run the maingame.py script.
 
+---
+
 ### Structure
 
 - **Stations:**  
@@ -16,6 +18,8 @@ To start the program, run the maingame.py script.
       _These follow the chain of tracks to its end (or follow the loop) and pick up and deploy cargo_
 - **Cargo:**  
     _Can be picked up or deployed by trains at stations. Grants score (and money) when deployed, but causes a game loss when left alone for to long_
+
+---
 
 ### Game Loop
 
@@ -41,6 +45,8 @@ This can be triggered by the train when it deploys cargo.
 A losing condition is handed to all cargo elements as callback upon creation by the main game.
 This can be triggered by the Cargo element as soon as it reaches a certain age without being delivered.
 
+---
+
 ### UI
 
 The UI is responsible for displaying the game state and interacting with its elements.
@@ -60,6 +66,8 @@ The following interactions are provided by the UI by handling clicks on the corr
 - Closing UI: (game panel) - click on open space
 - Building new track: (station UI panel) - line buttons
 - Demolishing track: (line UI panel) - demolish button
+
+---
 
 ### Outlooks:
 

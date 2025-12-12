@@ -21,6 +21,7 @@ class TrainspottingAppUI:
         self.game = game
         self.game_entities = []
         self.buttons = []
+        self.cursor_pos = ()
         self.building_line = None
         self.game_over_screen_shown = False
         self.cargo_images = {}
@@ -58,6 +59,7 @@ class TrainspottingAppUI:
         tk.Label(self.ui_frame, text="UI Panel").pack(pady=(10, 0))
 
         self.paint_field(0)
+        self.canvas.bind("<Motion>",self.handle_mouse_motion)
         self.canvas.bind("<Button-1>", self.handle_left_click)
 
     def paint_field(self, fps):
@@ -90,7 +92,7 @@ class TrainspottingAppUI:
 
         # Draw building info
         if self.building_line:
-            info_text = self.canvas.create_text(20, 50, text=f"Currently building line {self.building_line[0]}", anchor="w")
+            info_text = self.canvas.create_text(20, 50, text=f"Currently building line {self.building_line[0]}, Cost: {(self.building_line[1].get_distance_to(self.cursor_pos) * Constants.COST_PER_METER):.2f}$$", anchor="w")
             self.game_entities.append(info_text)
 
         # Draw tracks
@@ -233,7 +235,7 @@ class TrainspottingAppUI:
             if sel in line.stations and len(line.stations) >= 2:
                 btn = tk.Button(
                     self.ui_frame,
-                    text=f"Buy Train for Line {line.id}",
+                    text=f"Buy Train for Line {line.id} ({Constants.COST_PER_TRAIN}$$)",
                     command=lambda ln=line, st=sel: self.buy_train(ln, st),
                     bg=line.color
                 )
@@ -299,6 +301,9 @@ class TrainspottingAppUI:
         if not self.game.selection:
             self.game.selection = self.find_track_at(event.x, event.y)
         self.selection_changed()
+
+    def handle_mouse_motion(self, event):
+        self.cursor_pos = event.x,event.y
 
     def selection_changed(self):
         """
