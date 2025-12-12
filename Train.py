@@ -64,11 +64,18 @@ class Train:
         :param cargo_type: int - Cargo type
         :return: Bool
         """
+        #if not self.line.can_deploy_type(cargo_type):
+        # if in a loop
         if self.line.stations[0] == self.line.stations[-1]:
-            for crg in self.line.stations:
-                if cargo_type == crg.cargo_type:
+            for sta in self.line.stations:
+                if cargo_type == sta.cargo_type:
                     return True
+                if not self.line.can_deploy_type(cargo_type):
+                    for ln in sta.attached_lines:
+                        if ln.can_deploy_type(cargo_type):
+                            return True
             return False
+        # if no loop
         else:
             sta_lst = []
             if self.direction == 1:
@@ -79,6 +86,10 @@ class Train:
             for sta in sta_lst:
                 if sta.cargo_type == cargo_type:
                     return True
+                elif not self.line.can_deploy_type(cargo_type):
+                    for ln in sta.attached_lines:
+                        if ln.can_deploy_type(cargo_type):
+                            return True
             return False
 
     def update(self, tick_counter):
@@ -94,23 +105,24 @@ class Train:
             if tick_counter % Constants.CARGO_DEPLOY_TIME == 0:
                 station = self.line.stations[self.current_station_index]
                 # Unloading
-                # TODO: Unload if station has another line where this cargo type can be unloaded earlier
                 cargo_to_unload = next(
-                    (c for c in self.cargo_load if c.cargo_type == station.cargo_type
+                    (c for c in self.cargo_load if c.cargo_type == station.cargo_type or
+                     not self.line.can_deploy_type(c.cargo_type) and station.is_connected_to_cargo_type(c.cargo_type)
                      ), None)
                 if cargo_to_unload:
                     self.cargo_load.remove(cargo_to_unload)
                     # not loading station when same type (cargo is at the correct place)
-                    # station.add_cargo(cargo_to_unload)
-                    cargo_to_unload.unlist()
-                    #del cargo_to_unload
+                    if cargo_to_unload.cargo_type == station.cargo_type:
+                        cargo_to_unload.unlist()
+                    else:
+                        station.add_cargo(cargo_to_unload)
                     self.trigger_score()
                 # Loading
-                # TODO: Load if connected to a line that can serve type if no other line has closer connection
                 elif station.cargo_load and len(self.cargo_load) < Constants.CARGO_SPOTS_PER_TROLLEY:
                     index = next(
                         (station.cargo_load.index(c)
-                         for c in station.cargo_load if self.moving_towards(c.cargo_type)), -1
+                         for c in station.cargo_load
+                         if self.moving_towards(c.cargo_type)), -1
                     )
                     if index != -1:
                         cargo_to_load = station.cargo_load[index]

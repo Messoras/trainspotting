@@ -31,6 +31,7 @@ class Line:
                 if self.stations[0] == station:
                     return
                 self.stations.insert(0, station)
+                station.attached_lines.add(self) # updates line set for station
                 self.tracks.insert(0, (self.stations[0], self.stations[1]))
                 for train in self.trains:
                     train.current_station_index += 1
@@ -38,9 +39,11 @@ class Line:
                 if self.stations[-1] == station:
                     return
                 self.stations.append(station)
+                station.attached_lines.add(self) # updates line set for station
                 self.tracks.append((self.stations[-2], self.stations[-1]))
         else:
             self.stations.append(station)
+            station.attached_lines.add(self) # updates line set for station
 
     def remove_station(self, station: 'Station'):
         """
@@ -49,6 +52,7 @@ class Line:
         """
         if station in self.stations:
             index = self.stations.index(station)
+            self.stations[index].attached_lines.remove(self)
             
             if len(self.stations) > 1:
                 if index == 0:
@@ -113,10 +117,10 @@ class Line:
                 # It's a simple line, we can only delete from the ends.
                 if track == 0:
                     # remove first station
-                    del self.stations[0]
+                    self.remove_station(self.stations[0])
                 else:
                     # remove last station
-                    del self.stations[-1]
+                    self.remove_station(self.stations[-1])
 
             # Rebuild tracks based on the new station list
             self.tracks.clear()
@@ -185,13 +189,15 @@ class Line:
         """Checks if the line is a closed loop."""
         return len(self.stations) > 2 and self.stations[0] == self.stations[-1]
 
-    def shap_checker(self, shape_type: str) -> bool:
+    def can_deploy_type(self, cargo_type: int) -> bool:
         """
         Check if the line services a station of the given shape type.
         The train will only stop at stations of this shape type.
+        :param cargo_type: int - id of the checked cargo
+        :return: Bool
         """
         for station in self.stations:
-            if hasattr(station, 'shape_type') and station.shape_type == shape_type:
+            if station.cargo_type == cargo_type:
                 return True
         return False
 

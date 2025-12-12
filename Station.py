@@ -11,7 +11,7 @@ class Station:
         """
         self.position = (x_pos, y_pos)
         self.cargo_type = cargo_type
-        self.attached_lines = []
+        self.attached_lines = set()
         self.cargo_load = []
 
 
@@ -39,3 +39,14 @@ class Station:
         if self.cargo_load:
             return self.cargo_load.pop(0)
         return None
+
+    def is_connected_to_cargo_type(self, cargo_type):
+        """
+        Determines if a line is connected to this station that can deploy the given cargo type
+        :param cargo_type: int - id of the cargo type to check for
+        :return: Bool
+        """
+        for lin in self.attached_lines:
+            if lin.can_deploy_type(cargo_type):
+                return True
+        return False
