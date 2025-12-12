@@ -1,5 +1,3 @@
-from numba.cuda.simulator.kernelapi import andlock
-
 from Station import *
 from Train import *
 
