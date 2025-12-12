@@ -83,11 +83,11 @@ class TrainspottingAppUI:
         self.game_entities.append(fps_str)
 
         # Draw Score
-        score_text = self.canvas.create_text(1000, 20, text = f"Score: {self.game.score}")
+        score_text = self.canvas.create_text(1050, 20, text = f"Score: {self.game.score}", anchor="e")
         self.game_entities.append(score_text)
 
         # Draw Money
-        money_text = self.canvas.create_text(1000, 40, text=f"Money: {self.game.money:.2f}$$")
+        money_text = self.canvas.create_text(1050, 40, text=f"Money: {self.game.money:.2f}$$", anchor="e")
         self.game_entities.append(money_text)
 
         # Draw building info
