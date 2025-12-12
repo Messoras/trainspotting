@@ -7,6 +7,7 @@ CARGO_TYPE_TO_IMAGE = {
     2: "img/gold.png",
     3: "img/crystal.png"
 }
+DAISY_PATH = "img/daisy.png"
 ELIMINATION_TIMER = 2000
 CARGO_SPOTS_PER_TROLLEY = 6
 CARGO_SPAWN_TICK_DELAY = 200

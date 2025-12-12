@@ -64,7 +64,6 @@ The following interactions are provided by the UI by handling clicks on the corr
 ### Outlooks:
 
 - Increasing the amount of trolleys per train
-- Optimizing cargo loading/unloading criteria (cross line transport)
 - Graphics enhancement (train rotation, improved UI, etc.)
 - Semi-random station spawning (no overlaying stations...)
 - Implementing money and building/buying costs

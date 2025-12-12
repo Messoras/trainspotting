@@ -32,6 +32,7 @@ class TrainspottingAppUI:
             "blue": tk.PhotoImage(file="img/chocho_blue.png").subsample(6),
             "yellow": tk.PhotoImage(file="img/chocho_yellow.png").subsample(6),
         }
+        self.daisy_image = tk.PhotoImage(file=Constants.DAISY_PATH).subsample(2)
 
         # Main Frame
         self.main_frame = tk.Frame(master)
@@ -354,6 +355,8 @@ class TrainspottingAppUI:
             stipple="gray75"
         )
         self.game_entities.append(loss_cube)
+        daisy = self.canvas.create_image(400,400,image = self.daisy_image)
+        self.game_entities.append(daisy)
         loss_text = self.canvas.create_text(
             (Constants.UI_WIDTH - Constants.UI_SIDEBAR_MARGIN) // 2, Constants.UI_HEIGHT // 2 - 100,
             text="You lost!",
