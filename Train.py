@@ -68,13 +68,13 @@ class Train:
         :param cargo_type: int - Cargo type
         :return: Bool
         """
-        #if not self.line.can_deploy_type(cargo_type):
         # if in a loop
         if self.line.stations[0] == self.line.stations[-1]:
             for sta in self.line.stations:
                 if cargo_type == sta.cargo_type:
                     return True
-                if not self.line.can_deploy_type(cargo_type):
+                if not self.line.can_deploy_type(cargo_type) and\
+                not self.line.stations[self.current_station_index].is_connected_to_cargo_type(cargo_type):
                     for ln in sta.attached_lines:
                         if ln.can_deploy_type(cargo_type):
                             return True
@@ -90,7 +90,8 @@ class Train:
             for sta in sta_lst:
                 if sta.cargo_type == cargo_type:
                     return True
-                elif not self.line.can_deploy_type(cargo_type):
+                elif not self.line.can_deploy_type(cargo_type) and\
+                not self.line.stations[self.current_station_index].is_connected_to_cargo_type(cargo_type):
                     for ln in sta.attached_lines:
                         if ln.can_deploy_type(cargo_type):
                             return True
